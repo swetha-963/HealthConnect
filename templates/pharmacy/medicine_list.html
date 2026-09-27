@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Pharmacy - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h1>Online pharmacy</h1>
+      <p>Free delivery on orders over {{ CURRENCY }}{{ FREE_DELIVERY_THRESHOLD }}.</p>
+    </div>
+
+    <form class="filters" method="get">
+      <input class="form-input" type="search" name="q" value="{{ query }}" placeholder="Search medicines...">
+      <select class="form-input" name="category" style="max-width:200px">
+        <option value="">All categories</option>
+        {% for category in categories %}
+          <option value="{{ category.slug }}" {% if category.slug == active_category %}selected{% endif %}>{{ category.name }}</option>
+        {% endfor %}
+      </select>
+      <select class="form-input" name="sort" style="max-width:180px">
+        <option value="">Sort by name</option>
+        <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Price: low to high</option>
+        <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Price: high to low</option>
+      </select>
+      <button class="btn btn-primary" type="submit">Apply</button>
+      <a class="btn btn-outline" href="{% url 'pharmacy:medicine_list' %}">Reset</a>
+    </form>
+
+    <div class="grid grid-4">
+      {% for medicine in medicines %}
+        {% include "pharmacy/_medicine_card.html" with medicine=medicine %}
+      {% empty %}
+        <p class="empty-state">No medicines match your search.</p>
+      {% endfor %}
+    </div>
+
+    {% include "partials/pagination.html" with page_obj=page_obj %}
+  </div>
+</section>
+{% endblock %}

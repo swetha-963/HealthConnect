@@ -1,0 +1,52 @@
+{% extends "dashboard/base.html" %}
+
+{% block dash_title %}Orders{% endblock %}
+{% block dash_heading %}Orders{% endblock %}
+{% block dash_subtitle %}Track fulfilment and update delivery status.{% endblock %}
+
+{% block dash_content %}
+<form class="filters" method="get">
+  <input class="form-input" type="search" name="q" value="{{ query }}" placeholder="Search order id, customer...">
+  <select class="form-input" name="status" style="max-width:200px">
+    <option value="">All statuses</option>
+    {% for value, label in statuses %}
+      <option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-primary" type="submit">Filter</button>
+  <a class="btn btn-outline" href="{% url 'dashboard:order_list' %}">Reset</a>
+</form>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Placed</th><th>Status</th><th>Update</th></tr></thead>
+    <tbody>
+      {% for order in orders %}
+        <tr>
+          <td><a href="{% url 'dashboard:order_detail' order.order_id %}"><strong>{{ order.order_id }}</strong></a></td>
+          <td>{{ order.full_name }}<br><span class="muted">{{ order.phone }}</span></td>
+          <td>{{ order.items_count }}</td>
+          <td>{{ CURRENCY }}{{ order.total }}</td>
+          <td>{{ order.created_at|date:"d M Y, H:i" }}</td>
+          <td><span class="badge {{ order.status_class }}">{{ order.get_status_display }}</span></td>
+          <td>
+            <form class="qty-form" method="post" action="{% url 'dashboard:order_status_update' order.order_id %}">
+              {% csrf_token %}
+              <select class="form-input" name="status">
+                {% for value, label in statuses %}
+                  <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+              <button class="btn btn-primary btn-sm" type="submit">Save</button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="empty-state">No orders found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% include "partials/pagination.html" with page_obj=page_obj %}
+{% endblock %}

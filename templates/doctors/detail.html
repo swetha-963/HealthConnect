@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ doctor.full_name }} - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container cart-layout">
+    <div class="card">
+      <div class="grid grid-2">
+        <div>
+          {% if doctor.image %}
+            <img class="doctor-photo" src="{{ doctor.image.url }}" alt="{{ doctor.full_name }}">
+          {% else %}
+            <div class="avatar-fallback">{{ doctor.initials }}</div>
+          {% endif %}
+        </div>
+        <div>
+          <h1>{{ doctor.full_name }}</h1>
+          <span class="badge">{{ doctor.specialization.name }}</span>
+          <p class="muted">{{ doctor.qualification }} &middot; {{ doctor.experience_years }} years experience</p>
+          <p class="price">Consultation fee: {{ CURRENCY }}{{ doctor.consultation_fee }}</p>
+          {% if doctor.phone %}<p class="muted">Phone: {{ doctor.phone }}</p>{% endif %}
+        </div>
+      </div>
+      {% if doctor.bio %}<h3 class="mt-2">About</h3><p class="muted">{{ doctor.bio|linebreaks }}</p>{% endif %}
+
+      <h3 class="mt-2">Available schedules</h3>
+      {% if schedules %}
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Time</th><th>Room</th><th>Seats left</th></tr></thead>
+            <tbody>
+              {% for schedule in schedules %}
+                <tr>
+                  <td>{{ schedule.date|date:"D, d M Y" }}</td>
+                  <td>{{ schedule.start_time|time:"H:i" }} - {{ schedule.end_time|time:"H:i" }}</td>
+                  <td>{{ schedule.room|default:"-" }}</td>
+                  <td><span class="badge badge-success">{{ schedule.seats_left }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="muted">No open slots right now. Please check back soon.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h3>Book an appointment</h3>
+      {% if not user.is_authenticated %}
+        <p class="muted">Please <a href="{% url 'accounts:login' %}?next={{ request.path }}">log in</a> to book.</p>
+      {% elif not schedules %}
+        <p class="muted">Booking opens when the doctor publishes new slots.</p>
+      {% else %}
+        <form method="post" action="{% url 'doctors:book' doctor.slug %}" novalidate>
+          {% csrf_token %}
+          {% include "partials/form.html" with form=form %}
+          <button class="btn btn-primary btn-block" type="submit">Request appointment</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

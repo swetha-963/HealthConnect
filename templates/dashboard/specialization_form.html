@@ -1,0 +1,28 @@
+{% extends "dashboard/base.html" %}
+
+{% block dash_title %}Specializations{% endblock %}
+{% block dash_heading %}Specializations{% endblock %}
+{% block dash_subtitle %}Departments that group your doctors.{% endblock %}
+
+{% block dash_content %}
+<div class="cart-layout">
+  <div class="card">
+    <h3>Add specialization</h3>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "partials/form.html" with form=form %}
+      <button class="btn btn-primary" type="submit">Save specialization</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Existing</h3>
+    <ul>
+      {% for specialization in specializations %}
+        <li>{{ specialization.icon }} {{ specialization.name }} <span class="muted">({{ specialization.doctors.count }} doctors)</span></li>
+      {% empty %}
+        <li class="muted">None yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

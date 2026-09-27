@@ -1,0 +1,28 @@
+{% extends "dashboard/base.html" %}
+
+{% block dash_title %}Categories{% endblock %}
+{% block dash_heading %}Medicine categories{% endblock %}
+{% block dash_subtitle %}Group products so patients can browse faster.{% endblock %}
+
+{% block dash_content %}
+<div class="cart-layout">
+  <div class="card">
+    <h3>Add category</h3>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "partials/form.html" with form=form %}
+      <button class="btn btn-primary" type="submit">Save category</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Existing</h3>
+    <ul>
+      {% for category in categories %}
+        <li>{{ category.name }} <span class="muted">({{ category.medicines.count }} products)</span></li>
+      {% empty %}
+        <li class="muted">None yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

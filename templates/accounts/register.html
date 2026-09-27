@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Register - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="container auth-wrap">
+  <div class="card">
+    <h1>Create your account</h1>
+    <p class="muted">Book appointments and order medicines in a couple of clicks.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "partials/form.html" with form=form %}
+      <button class="btn btn-primary btn-block" type="submit">Register</button>
+    </form>
+    <p class="muted mt-2">Already registered? <a href="{% url 'accounts:login' %}">Log in</a></p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Cart - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1>Your cart</h1>
+    {% if cart.items.all %}
+      <div class="cart-layout">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Item</th><th>Price</th><th>Quantity</th><th>Total</th><th></th></tr></thead>
+            <tbody>
+              {% for item in cart.items.all %}
+                <tr>
+                  <td><a href="{{ item.medicine.get_absolute_url }}">{{ item.medicine.name }}</a><br><span class="muted">{{ item.medicine.category.name }}</span></td>
+                  <td>{{ CURRENCY }}{{ item.medicine.price }}</td>
+                  <td>
+                    <form class="qty-form" method="post" action="{% url 'pharmacy:update_cart_item' item.pk %}">
+                      {% csrf_token %}
+                      <input class="form-input" type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.medicine.stock }}">
+                      <button class="btn btn-outline btn-sm" type="submit">Update</button>
+                    </form>
+                  </td>
+                  <td><strong>{{ CURRENCY }}{{ item.total_price }}</strong></td>
+                  <td>
+                    <form method="post" action="{% url 'pharmacy:remove_cart_item' item.pk %}" data-confirm="Remove this item?">
+                      {% csrf_token %}
+                      <button class="btn btn-outline btn-sm" type="submit">Remove</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Order summary</h3>
+          <div class="summary-row"><span>Items</span><span>{{ cart.items_count }}</span></div>
+          <div class="summary-row"><span>Subtotal</span><span>{{ CURRENCY }}{{ cart.subtotal }}</span></div>
+          <div class="summary-row"><span>Delivery</span><span>{% if cart.delivery_fee %}{{ CURRENCY }}{{ cart.delivery_fee }}{% else %}Free{% endif %}</span></div>
+          <div class="summary-row summary-total"><span>Total</span><span>{{ CURRENCY }}{{ cart.total }}</span></div>
+          <a class="btn btn-primary btn-block mt-2" href="{% url 'pharmacy:checkout' %}">Proceed to checkout</a>
+          <a class="btn btn-outline btn-block mt-2" href="{% url 'pharmacy:medicine_list' %}">Continue shopping</a>
+        </div>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>Your cart is empty.</p>
+        <a class="btn btn-primary" href="{% url 'pharmacy:medicine_list' %}">Browse the pharmacy</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

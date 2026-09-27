@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{% block dash_title %}Dashboard{% endblock %} - {{ SITE_NAME }} admin{% endblock %}
+
+{% block content %}
+<div class="dash-layout">
+  <aside class="dash-side" id="dashSide">
+    <h3>Overview</h3>
+    <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Dashboard</a>
+    <h3>Doctors</h3>
+    <a href="{% url 'dashboard:doctor_list' %}" class="{% if 'doctor' in request.resolver_match.url_name %}active{% endif %}">All doctors</a>
+    <a href="{% url 'dashboard:doctor_add' %}">Add doctor</a>
+    <a href="{% url 'dashboard:specialization_add' %}">Specializations</a>
+    <h3>Schedules</h3>
+    <a href="{% url 'dashboard:schedule_list' %}" class="{% if 'schedule' in request.resolver_match.url_name %}active{% endif %}">View schedules</a>
+    <a href="{% url 'dashboard:schedule_add' %}">Add schedule</a>
+    <h3>Appointments</h3>
+    <a href="{% url 'dashboard:appointment_list' %}" class="{% if 'appointment' in request.resolver_match.url_name %}active{% endif %}">View appointments</a>
+    <h3>Pharmacy</h3>
+    <a href="{% url 'dashboard:medicine_list' %}" class="{% if 'medicine' in request.resolver_match.url_name %}active{% endif %}">View medicines</a>
+    <a href="{% url 'dashboard:medicine_add' %}">Add medicine</a>
+    <a href="{% url 'dashboard:category_add' %}">Categories</a>
+    <h3>Orders</h3>
+    <a href="{% url 'dashboard:order_list' %}" class="{% if 'order' in request.resolver_match.url_name %}active{% endif %}">View orders</a>
+    <h3>Session</h3>
+    <a href="{% url 'core:home' %}">Public site</a>
+    <a href="/django-admin/">Django admin</a>
+  </aside>
+
+  <section class="dash-main">
+    <div class="dash-header">
+      <div>
+        <button class="btn btn-outline btn-sm dash-mobile-toggle" id="dashToggle" type="button">Menu</button>
+        <h1>{% block dash_heading %}Dashboard{% endblock %}</h1>
+        <p class="muted">{% block dash_subtitle %}{% endblock %}</p>
+      </div>
+      <div>{% block dash_actions %}{% endblock %}</div>
+    </div>
+    {% block dash_content %}{% endblock %}
+  </section>
+</div>
+{% endblock %}

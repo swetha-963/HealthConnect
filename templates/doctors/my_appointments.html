@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}My appointments - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1>My appointments</h1>
+    {% if appointments %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Reference</th><th>Doctor</th><th>Slot</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for appointment in appointments %}
+              <tr>
+                <td><strong>{{ appointment.reference }}</strong></td>
+                <td>{{ appointment.doctor.full_name }}<br><span class="muted">{{ appointment.doctor.specialization.name }}</span></td>
+                <td>{{ appointment.schedule.date|date:"d M Y" }}<br><span class="muted">{{ appointment.schedule.start_time|time:"H:i" }} - {{ appointment.schedule.end_time|time:"H:i" }}</span></td>
+                <td><span class="badge {{ appointment.status_class }}">{{ appointment.get_status_display }}</span></td>
+                <td>
+                  {% if appointment.status == "pending" or appointment.status == "confirmed" %}
+                    <form method="post" action="{% url 'doctors:cancel_appointment' appointment.reference %}" data-confirm="Cancel this appointment?">
+                      {% csrf_token %}
+                      <button class="btn btn-outline btn-sm" type="submit">Cancel</button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>You have no appointments yet.</p>
+        <a class="btn btn-primary" href="{% url 'doctors:list' %}">Book your first visit</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,24 @@
+<article class="card medicine-card">
+  {% if medicine.image %}
+    <img class="medicine-photo" src="{{ medicine.image.url }}" alt="{{ medicine.name }}">
+  {% else %}
+    <div class="medicine-fallback">Rx</div>
+  {% endif %}
+  <div>
+    <h3>{{ medicine.name }}</h3>
+    <span class="muted">{{ medicine.brand|default:medicine.category.name }}</span>
+  </div>
+  <div class="doctor-meta">
+    <span class="price">{{ CURRENCY }}{{ medicine.price }}</span>
+    <span class="badge {% if not medicine.in_stock %}badge-danger{% elif medicine.is_low_stock %}badge-warning{% else %}badge-success{% endif %}">{{ medicine.stock_label }}</span>
+  </div>
+  <a class="btn btn-outline btn-sm" href="{{ medicine.get_absolute_url }}">View details</a>
+  {% if user.is_authenticated and medicine.in_stock %}
+    <form method="post" action="{% url 'pharmacy:add_to_cart' medicine.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="quantity" value="1">
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button class="btn btn-primary btn-sm btn-block" type="submit">Add to cart</button>
+    </form>
+  {% endif %}
+</article>

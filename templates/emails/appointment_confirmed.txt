@@ -1,0 +1,13 @@
+Hi {{ appointment.patient_name }},
+
+Good news - your appointment is confirmed.
+
+Reference : {{ appointment.reference }}
+Doctor    : {{ appointment.doctor.full_name }}
+Date      : {{ appointment.schedule.date }}
+Time      : {{ appointment.schedule.start_time }} - {{ appointment.schedule.end_time }}
+Room      : {{ appointment.schedule.room|default:"Reception will guide you" }}
+
+Please arrive 10 minutes early with any previous reports.
+
+The HealthConnect team

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}About - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h1>About HealthConnect</h1>
+      <p>One platform for clinical appointments and pharmacy delivery.</p>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Our mission</h3>
+        <p class="muted">We make routine healthcare simple: find the right doctor, reserve a slot that fits your day, and restock your medicine cabinet without a trip to the pharmacy.</p>
+      </div>
+      <div class="card">
+        <h3>How we work</h3>
+        <p class="muted">Every doctor profile, schedule and medicine listing is curated by our admin team. Appointments are reviewed and confirmed before your visit, and orders are tracked from packing to delivery.</p>
+      </div>
+      <div class="card">
+        <h3>Patient safety</h3>
+        <p class="muted">Prescription-only medicines are clearly flagged, stock levels are updated on every order, and your personal data stays inside your account.</p>
+      </div>
+      <div class="card">
+        <h3>Support</h3>
+        <p class="muted">Questions? Write to <a href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a> or call {{ SUPPORT_PHONE }}.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

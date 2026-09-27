@@ -1,0 +1,60 @@
+{% extends "dashboard/base.html" %}
+
+{% block dash_title %}Schedules{% endblock %}
+{% block dash_heading %}Doctor schedules{% endblock %}
+{% block dash_subtitle %}Publish slots and toggle availability.{% endblock %}
+{% block dash_actions %}<a class="btn btn-primary" href="{% url 'dashboard:schedule_add' %}">Add schedule</a>{% endblock %}
+
+{% block dash_content %}
+<form class="filters" method="get">
+  <select class="form-input" name="doctor" style="max-width:240px">
+    <option value="">All doctors</option>
+    {% for doctor in doctors %}
+      <option value="{{ doctor.pk }}" {% if doctor.pk|stringformat:"s" == doctor_id %}selected{% endif %}>{{ doctor.full_name }}</option>
+    {% endfor %}
+  </select>
+  <select class="form-input" name="availability" style="max-width:200px">
+    <option value="">Any availability</option>
+    <option value="available" {% if availability == "available" %}selected{% endif %}>Available</option>
+    <option value="unavailable" {% if availability == "unavailable" %}selected{% endif %}>Unavailable</option>
+  </select>
+  <button class="btn btn-primary" type="submit">Filter</button>
+  <a class="btn btn-outline" href="{% url 'dashboard:schedule_list' %}">Reset</a>
+</form>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Doctor</th><th>Date</th><th>Time</th><th>Room</th><th>Booked</th><th>Available</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for schedule in schedules %}
+        <tr>
+          <td><strong>{{ schedule.doctor.full_name }}</strong><br><span class="muted">{{ schedule.doctor.specialization.name }}</span></td>
+          <td>{{ schedule.date|date:"D, d M Y" }}</td>
+          <td>{{ schedule.start_time|time:"H:i" }} - {{ schedule.end_time|time:"H:i" }}</td>
+          <td>{{ schedule.room|default:"-" }}</td>
+          <td>{{ schedule.booked_count }} / {{ schedule.slot_limit }}</td>
+          <td><span class="badge {% if schedule.is_available %}badge-success{% else %}badge-danger{% endif %}">{% if schedule.is_available %}Available{% else %}Unavailable{% endif %}</span>
+            {% if schedule.is_past %}<span class="badge badge-warning">Past</span>{% endif %}</td>
+          <td>
+            <div class="table-actions">
+              <a class="btn btn-outline btn-sm" href="{% url 'dashboard:schedule_edit' schedule.pk %}">Edit</a>
+              <form method="post" action="{% url 'dashboard:schedule_toggle' schedule.pk %}">
+                {% csrf_token %}
+                <button class="btn btn-outline btn-sm" type="submit">{% if schedule.is_available %}Mark unavailable{% else %}Mark available{% endif %}</button>
+              </form>
+              <form method="post" action="{% url 'dashboard:schedule_delete' schedule.pk %}" data-confirm="Delete this schedule?">
+                {% csrf_token %}
+                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="empty-state">No schedules yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% include "partials/pagination.html" with page_obj=page_obj %}
+{% endblock %}

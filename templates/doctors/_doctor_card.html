@@ -1,0 +1,16 @@
+<article class="card doctor-card">
+  {% if doctor.image %}
+    <img class="doctor-photo" src="{{ doctor.image.url }}" alt="{{ doctor.full_name }}">
+  {% else %}
+    <div class="avatar-fallback">{{ doctor.initials }}</div>
+  {% endif %}
+  <div>
+    <h3>{{ doctor.full_name }}</h3>
+    <span class="badge">{{ doctor.specialization.name }}</span>
+  </div>
+  <p class="muted">{{ doctor.qualification }} &middot; {{ doctor.experience_years }} yrs experience</p>
+  <div class="doctor-meta">
+    <span class="price">{{ CURRENCY }}{{ doctor.consultation_fee }}</span>
+    <a class="btn btn-primary btn-sm" href="{{ doctor.get_absolute_url }}">Book now</a>
+  </div>
+</article>
