@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1>Checkout</h1>
+    <div class="cart-layout">
+      <div class="card">
+        <h3>Delivery details</h3>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="form-grid">
+            {% include "partials/form.html" with form=form %}
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">Place order</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Order summary</h3>
+        {% for item in cart.items.all %}
+          <div class="summary-row"><span>{{ item.medicine.name }} &times; {{ item.quantity }}</span><span>{{ CURRENCY }}{{ item.total_price }}</span></div>
+        {% endfor %}
+        <div class="summary-row"><span>Subtotal</span><span>{{ CURRENCY }}{{ cart.subtotal }}</span></div>
+        <div class="summary-row"><span>Delivery</span><span>{% if cart.delivery_fee %}{{ CURRENCY }}{{ cart.delivery_fee }}{% else %}Free{% endif %}</span></div>
+        <div class="summary-row summary-total"><span>Total</span><span>{{ CURRENCY }}{{ cart.total }}</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

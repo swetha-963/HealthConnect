@@ -1,0 +1,13 @@
+Hi {{ appointment.patient_name }},
+
+We received your appointment request.
+
+Reference : {{ appointment.reference }}
+Doctor    : {{ appointment.doctor.full_name }} ({{ appointment.doctor.specialization.name }})
+Date      : {{ appointment.schedule.date }}
+Time      : {{ appointment.schedule.start_time }} - {{ appointment.schedule.end_time }}
+Status    : {{ appointment.get_status_display }}
+
+Our team will confirm the slot shortly and you will receive another email.
+
+The HealthConnect team

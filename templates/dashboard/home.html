@@ -1,0 +1,83 @@
+{% extends "dashboard/base.html" %}
+
+{% block dash_title %}Overview{% endblock %}
+{% block dash_heading %}Admin dashboard{% endblock %}
+{% block dash_subtitle %}Live view of doctors, appointments, stock and orders.{% endblock %}
+
+{% block dash_content %}
+<div class="grid grid-4">
+  <div class="stat-card"><span>Active doctors</span><strong>{{ stats.doctors }}</strong></div>
+  <div class="stat-card"><span>Appointments</span><strong>{{ stats.appointments }}</strong><span class="muted">{{ stats.pending_appointments }} pending</span></div>
+  <div class="stat-card"><span>Today's appointments</span><strong>{{ stats.today_appointments }}</strong></div>
+  <div class="stat-card"><span>Medicines</span><strong>{{ stats.medicines }}</strong><span class="muted">{{ stats.low_stock }} low stock</span></div>
+  <div class="stat-card"><span>Orders</span><strong>{{ stats.orders }}</strong><span class="muted">{{ stats.pending_orders }} pending</span></div>
+  <div class="stat-card"><span>Revenue</span><strong>{{ CURRENCY }}{{ stats.revenue }}</strong></div>
+</div>
+
+<div class="grid grid-2 mt-2">
+  <div class="card">
+    <h3>Recent appointments</h3>
+    {% if recent_appointments %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ref</th><th>Patient</th><th>Doctor</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for appointment in recent_appointments %}
+              <tr>
+                <td>{{ appointment.reference }}</td>
+                <td>{{ appointment.patient_name }}</td>
+                <td>{{ appointment.doctor.full_name }}</td>
+                <td><span class="badge {{ appointment.status_class }}">{{ appointment.get_status_display }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}<p class="muted">No appointments yet.</p>{% endif %}
+    <a class="btn btn-outline btn-sm mt-2" href="{% url 'dashboard:appointment_list' %}">View all</a>
+  </div>
+
+  <div class="card">
+    <h3>Recent orders</h3>
+    {% if recent_orders %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for order in recent_orders %}
+              <tr>
+                <td>{{ order.order_id }}</td>
+                <td>{{ order.full_name }}</td>
+                <td>{{ CURRENCY }}{{ order.total }}</td>
+                <td><span class="badge {{ order.status_class }}">{{ order.get_status_display }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}<p class="muted">No orders yet.</p>{% endif %}
+    <a class="btn btn-outline btn-sm mt-2" href="{% url 'dashboard:order_list' %}">View all</a>
+  </div>
+</div>
+
+<div class="card mt-2">
+  <h3>Low stock alerts</h3>
+  {% if low_stock_medicines %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Medicine</th><th>Category</th><th>Stock</th><th></th></tr></thead>
+        <tbody>
+          {% for medicine in low_stock_medicines %}
+            <tr>
+              <td>{{ medicine.name }}</td>
+              <td>{{ medicine.category.name }}</td>
+              <td><span class="badge {% if medicine.stock == 0 %}badge-danger{% else %}badge-warning{% endif %}">{{ medicine.stock }}</span></td>
+              <td><a class="btn btn-outline btn-sm" href="{% url 'dashboard:medicine_edit' medicine.pk %}">Restock</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}<p class="muted">All medicines are well stocked.</p>{% endif %}
+</div>
+{% endblock %}

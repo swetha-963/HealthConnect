@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}HealthConnect - Doctors & Pharmacy Online{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="badge">Trusted healthcare, simplified</span>
+      <h1>Book verified doctors and get medicines delivered.</h1>
+      <p class="lead">HealthConnect brings appointment booking and a full online pharmacy together in one secure place.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="{% url 'doctors:list' %}">Find a doctor</a>
+        <a class="btn btn-outline" href="{% url 'pharmacy:medicine_list' %}">Shop medicines</a>
+      </div>
+      <div class="hero-stats">
+        <div><strong>24/7</strong><span class="muted">Online booking</span></div>
+        <div><strong>Free</strong><span class="muted">Delivery over {{ CURRENCY }}{{ FREE_DELIVERY_THRESHOLD }}</span></div>
+        <div><strong>100%</strong><span class="muted">Verified pharmacy</span></div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h3>How it works</h3>
+      <ul>
+        <li><span class="tick">1.</span><span>Create your free HealthConnect account.</span></li>
+        <li><span class="tick">2.</span><span>Pick a doctor and an available time slot.</span></li>
+        <li><span class="tick">3.</span><span>Get an email once your appointment is confirmed.</span></li>
+        <li><span class="tick">4.</span><span>Order prescribed medicines and track delivery.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{% if specializations %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Browse by specialty</h2>
+      <p>Care across the specialties patients need most.</p>
+    </div>
+    <div class="grid grid-4">
+      {% for specialization in specializations %}
+        <a class="card" href="{% url 'doctors:list' %}?specialization={{ specialization.slug }}">
+          <h3>{{ specialization.icon }} {{ specialization.name }}</h3>
+          <p class="muted">{{ specialization.description|truncatewords:14|default:"Consult our specialists." }}</p>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section" style="background:var(--white);">
+  <div class="container">
+    <div class="section-head">
+      <h2>Meet our doctors</h2>
+      <p>Experienced clinicians available for in-clinic consultations.</p>
+    </div>
+    <div class="grid grid-4">
+      {% for doctor in doctors %}
+        {% include "doctors/_doctor_card.html" with doctor=doctor %}
+      {% empty %}
+        <p class="empty-state">No doctors published yet.</p>
+      {% endfor %}
+    </div>
+    <p class="text-center mt-2"><a class="btn btn-outline" href="{% url 'doctors:list' %}">View all doctors</a></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Pharmacy picks</h2>
+      <p>Everyday essentials, in stock and ready to ship.</p>
+    </div>
+    <div class="grid grid-4">
+      {% for medicine in medicines %}
+        {% include "pharmacy/_medicine_card.html" with medicine=medicine %}
+      {% empty %}
+        <p class="empty-state">No medicines published yet.</p>
+      {% endfor %}
+    </div>
+    <p class="text-center mt-2"><a class="btn btn-outline" href="{% url 'pharmacy:medicine_list' %}">Go to pharmacy</a></p>
+  </div>
+</section>
+{% endblock %}

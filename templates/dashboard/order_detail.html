@@ -1,0 +1,42 @@
+{% extends "dashboard/base.html" %}
+
+{% block dash_title %}Order {{ order.order_id }}{% endblock %}
+{% block dash_heading %}Order {{ order.order_id }}{% endblock %}
+{% block dash_subtitle %}Placed {{ order.created_at|date:"d M Y, H:i" }} by {{ order.full_name }}.{% endblock %}
+{% block dash_actions %}<a class="btn btn-outline" href="{% url 'dashboard:order_list' %}">Back to orders</a>{% endblock %}
+
+{% block dash_content %}
+<div class="cart-layout">
+  <div class="card">
+    <h3>Items</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Medicine</th><th>Unit price</th><th>Qty</th><th>Total</th></tr></thead>
+        <tbody>
+          {% for item in order.items.all %}
+            <tr><td>{{ item.medicine_name }}</td><td>{{ CURRENCY }}{{ item.unit_price }}</td><td>{{ item.quantity }}</td><td>{{ CURRENCY }}{{ item.total_price }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="summary-row mt-2"><span>Subtotal</span><span>{{ CURRENCY }}{{ order.subtotal }}</span></div>
+    <div class="summary-row"><span>Delivery</span><span>{{ CURRENCY }}{{ order.delivery_fee }}</span></div>
+    <div class="summary-row summary-total"><span>Total</span><span>{{ CURRENCY }}{{ order.total }}</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Status</h3>
+    <p><span class="badge {{ order.status_class }}">{{ order.get_status_display }}</span></p>
+    <form method="post" action="{% url 'dashboard:order_status_update' order.order_id %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      {% include "partials/form.html" with form=form %}
+      <button class="btn btn-primary btn-block" type="submit">Update status</button>
+    </form>
+    <h3 class="mt-2">Customer</h3>
+    <p class="muted">{{ order.full_name }}<br>{{ order.email }}<br>{{ order.phone }}<br>{{ order.address|linebreaksbr }}<br>{{ order.city }} {{ order.postal_code }}</p>
+    <p class="muted">Payment: {{ order.get_payment_method_display }}</p>
+    {% if order.notes %}<p class="muted">Notes: {{ order.notes }}</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

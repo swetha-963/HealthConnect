@@ -1,0 +1,18 @@
+{% extends "dashboard/base.html" %}
+
+{% block dash_title %}{{ title }}{% endblock %}
+{% block dash_heading %}{{ title }}{% endblock %}
+{% block dash_subtitle %}Patients can only book slots marked available.{% endblock %}
+{% block dash_actions %}<a class="btn btn-outline" href="{% url 'dashboard:schedule_list' %}">Back to schedules</a>{% endblock %}
+
+{% block dash_content %}
+<div class="card">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="form-grid">
+      {% include "partials/form.html" with form=form %}
+    </div>
+    <button class="btn btn-primary" type="submit">Save schedule</button>
+  </form>
+</div>
+{% endblock %}

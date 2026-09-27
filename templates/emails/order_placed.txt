@@ -1,0 +1,19 @@
+Hi {{ order.full_name }},
+
+Thank you for your order.
+
+Order ID : {{ order.order_id }}
+Items    :
+{% for item in order.items.all %}  - {{ item.medicine_name }} x{{ item.quantity }} = {{ item.total_price }}
+{% endfor %}
+Subtotal : {{ order.subtotal }}
+Delivery : {{ order.delivery_fee }}
+Total    : {{ order.total }}
+Payment  : {{ order.get_payment_method_display }}
+
+Delivering to:
+{{ order.address }}, {{ order.city }} {{ order.postal_code }}
+
+You can track the status at {{ settings.SITE_URL }}/pharmacy/orders/{{ order.order_id }}/
+
+The HealthConnect pharmacy

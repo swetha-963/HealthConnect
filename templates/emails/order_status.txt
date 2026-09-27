@@ -1,0 +1,10 @@
+Hi {{ order.full_name }},
+
+Your order {{ order.order_id }} is now: {{ order.get_status_display }}.
+
+Total: {{ order.total }}
+Items: {{ order.items_count }}
+
+Track it any time at {{ settings.SITE_URL }}/pharmacy/orders/{{ order.order_id }}/
+
+The HealthConnect pharmacy

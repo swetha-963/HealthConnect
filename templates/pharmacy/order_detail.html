@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Order {{ order.order_id }} - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container cart-layout">
+    <div class="card">
+      <h1>Order {{ order.order_id }}</h1>
+      <p><span class="badge {{ order.status_class }}">{{ order.get_status_display }}</span> <span class="muted">placed {{ order.created_at|date:"d M Y, H:i" }}</span></p>
+      <div class="table-wrap mt-2">
+        <table>
+          <thead><tr><th>Item</th><th>Unit price</th><th>Qty</th><th>Total</th></tr></thead>
+          <tbody>
+            {% for item in order.items.all %}
+              <tr>
+                <td>{{ item.medicine_name }}</td>
+                <td>{{ CURRENCY }}{{ item.unit_price }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ CURRENCY }}{{ item.total_price }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Delivery</h3>
+      <p class="muted">{{ order.full_name }}<br>{{ order.address|linebreaksbr }}<br>{{ order.city }} {{ order.postal_code }}<br>{{ order.phone }}<br>{{ order.email }}</p>
+      <h3>Payment</h3>
+      <p class="muted">{{ order.get_payment_method_display }}</p>
+      <div class="summary-row"><span>Subtotal</span><span>{{ CURRENCY }}{{ order.subtotal }}</span></div>
+      <div class="summary-row"><span>Delivery</span><span>{{ CURRENCY }}{{ order.delivery_fee }}</span></div>
+      <div class="summary-row summary-total"><span>Total</span><span>{{ CURRENCY }}{{ order.total }}</span></div>
+      <a class="btn btn-outline btn-block mt-2" href="{% url 'pharmacy:my_orders' %}">Back to orders</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

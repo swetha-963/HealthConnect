@@ -1,0 +1,25 @@
+{% extends "dashboard/base.html" %}
+
+{% block dash_title %}{{ title }}{% endblock %}
+{% block dash_heading %}{{ title }}{% endblock %}
+{% block dash_subtitle %}Pricing, stock and product image.{% endblock %}
+{% block dash_actions %}<a class="btn btn-outline" href="{% url 'dashboard:medicine_list' %}">Back to medicines</a>{% endblock %}
+
+{% block dash_content %}
+<div class="card">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <div class="form-grid">
+      {% include "partials/form.html" with form=form %}
+    </div>
+    {% if medicine and medicine.image %}
+      <p class="muted">Current image</p>
+      <img src="{{ medicine.image.url }}" alt="{{ medicine.name }}" style="max-width:140px;border-radius:12px">
+    {% endif %}
+    <div class="mt-2">
+      <button class="btn btn-primary" type="submit">Save medicine</button>
+      <a class="btn btn-outline" href="{% url 'dashboard:category_add' %}">Add category</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

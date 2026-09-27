@@ -1,0 +1,25 @@
+{% extends "dashboard/base.html" %}
+
+{% block dash_title %}{{ title }}{% endblock %}
+{% block dash_heading %}{{ title }}{% endblock %}
+{% block dash_subtitle %}Profile details, consultation fee and photo.{% endblock %}
+{% block dash_actions %}<a class="btn btn-outline" href="{% url 'dashboard:doctor_list' %}">Back to doctors</a>{% endblock %}
+
+{% block dash_content %}
+<div class="card">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <div class="form-grid">
+      {% include "partials/form.html" with form=form %}
+    </div>
+    {% if doctor and doctor.image %}
+      <p class="muted">Current photo</p>
+      <img src="{{ doctor.image.url }}" alt="{{ doctor.full_name }}" style="max-width:160px;border-radius:12px">
+    {% endif %}
+    <div class="mt-2">
+      <button class="btn btn-primary" type="submit">Save doctor</button>
+      <a class="btn btn-outline" href="{% url 'dashboard:specialization_add' %}">Add specialization</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

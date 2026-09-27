@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ medicine.name }} - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="cart-layout">
+      <div class="card">
+        <div class="grid grid-2">
+          <div>
+            {% if medicine.image %}
+              <img class="medicine-photo" src="{{ medicine.image.url }}" alt="{{ medicine.name }}">
+            {% else %}
+              <div class="medicine-fallback">Rx</div>
+            {% endif %}
+          </div>
+          <div>
+            <h1>{{ medicine.name }}</h1>
+            <span class="badge">{{ medicine.category.name }}</span>
+            {% if medicine.prescription_required %}<span class="badge badge-warning">Prescription required</span>{% endif %}
+            <p class="muted">{{ medicine.brand }}</p>
+            <p class="price">{{ CURRENCY }}{{ medicine.price }}</p>
+            <p><span class="badge {% if not medicine.in_stock %}badge-danger{% elif medicine.is_low_stock %}badge-warning{% else %}badge-success{% endif %}">{{ medicine.stock_label }}</span></p>
+            {% if medicine.expiry_date %}<p class="muted">Best before {{ medicine.expiry_date|date:"M Y" }}</p>{% endif %}
+          </div>
+        </div>
+        {% if medicine.description %}
+          <h3 class="mt-2">Description</h3>
+          <p class="muted">{{ medicine.description|linebreaks }}</p>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <h3>Order this item</h3>
+        {% if not user.is_authenticated %}
+          <p class="muted">Please <a href="{% url 'accounts:login' %}?next={{ request.path }}">log in</a> to add items to your cart.</p>
+        {% elif not medicine.in_stock %}
+          <p class="muted">This item is currently out of stock.</p>
+        {% else %}
+          <form method="post" action="{% url 'pharmacy:add_to_cart' medicine.pk %}">
+            {% csrf_token %}
+            <div class="form-row">
+              <label for="quantity">Quantity</label>
+              <div class="qty-form">
+                <button class="btn btn-outline btn-sm" type="button" data-qty-step="-1" data-qty-target="#quantity">-</button>
+                <input class="form-input" id="quantity" type="number" name="quantity" value="1" min="1" max="{{ medicine.stock }}">
+                <button class="btn btn-outline btn-sm" type="button" data-qty-step="1" data-qty-target="#quantity">+</button>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-block" type="submit">Add to cart</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if related_medicines %}
+      <h2 class="mt-2">Related products</h2>
+      <div class="grid grid-4">
+        {% for item in related_medicines %}
+          {% include "pharmacy/_medicine_card.html" with medicine=item %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

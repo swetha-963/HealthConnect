@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Doctors - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h1>Find a doctor</h1>
+      <p>Search by name or filter by specialty, then pick an open slot.</p>
+    </div>
+
+    <form class="filters" method="get">
+      <input class="form-input" type="search" name="q" value="{{ query }}" placeholder="Search doctors...">
+      <select class="form-input" name="specialization" style="max-width:220px">
+        <option value="">All specialties</option>
+        {% for specialization in specializations %}
+          <option value="{{ specialization.slug }}" {% if specialization.slug == active_specialization %}selected{% endif %}>{{ specialization.name }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-primary" type="submit">Search</button>
+      <a class="btn btn-outline" href="{% url 'doctors:list' %}">Reset</a>
+    </form>
+
+    <div class="grid grid-3">
+      {% for doctor in doctors %}
+        {% include "doctors/_doctor_card.html" with doctor=doctor %}
+      {% empty %}
+        <p class="empty-state">No doctors match your search.</p>
+      {% endfor %}
+    </div>
+
+    {% include "partials/pagination.html" with page_obj=page_obj %}
+  </div>
+</section>
+{% endblock %}

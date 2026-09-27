@@ -1,0 +1,12 @@
+Hi {{ user.display_name }},
+
+Welcome to HealthConnect! Your account is ready.
+
+You can now:
+  - book appointments with our doctors
+  - order medicines from our online pharmacy
+  - track every appointment and order from your profile
+
+Visit {{ settings.SITE_URL }} to get started.
+
+The HealthConnect team

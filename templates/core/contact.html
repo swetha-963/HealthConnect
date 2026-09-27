@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Contact - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h1>Contact us</h1>
+      <p>We usually reply within one business day.</p>
+    </div>
+    <div class="cart-layout">
+      <div class="card">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {% include "partials/form.html" with form=form %}
+          <button class="btn btn-primary" type="submit">Send message</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Reach us directly</h3>
+        <p class="muted">Email<br><a href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a></p>
+        <p class="muted">Phone<br>{{ SUPPORT_PHONE }}</p>
+        <p class="muted">Hours<br>Mon-Sat, 8:00 - 20:00</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

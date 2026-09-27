@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}My profile - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container cart-layout">
+    <div class="card">
+      <h1>My profile</h1>
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <div class="form-grid">
+          {% include "partials/form.html" with form=form %}
+        </div>
+        <button class="btn btn-primary" type="submit">Save changes</button>
+      </form>
+    </div>
+    <div class="card">
+      {% if user.profile_image %}
+        <img class="doctor-photo" src="{{ user.profile_image.url }}" alt="{{ user.display_name }}">
+      {% else %}
+        <div class="avatar-fallback">{{ user.display_name|slice:":2"|upper }}</div>
+      {% endif %}
+      <h3 class="mt-2">{{ user.display_name }}</h3>
+      <p class="muted">{{ user.email }}</p>
+      <span class="badge">{{ user.get_role_display }}</span>
+      <div class="mt-2">
+        <a class="btn btn-outline btn-block" href="{% url 'doctors:my_appointments' %}">My appointments</a>
+        <a class="btn btn-outline btn-block mt-2" href="{% url 'pharmacy:my_orders' %}">My orders</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
