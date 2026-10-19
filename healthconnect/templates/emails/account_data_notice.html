@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.5;">
+    <h2>You shared account data with {{ site_name }}</h2>
+    <p>Hello {{ user.email }},</p>
+    <p>
+        Your email address was verified and your {{ site_name }} account is now connected
+        to this website.
+    </p>
+    <p><strong>Data shared with {{ site_name }}:</strong></p>
+    <ul>
+        {% for item in shared_data %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    <p><strong>Activity details:</strong></p>
+    <ul>
+        <li><strong>Website:</strong> {{ site_url }}</li>
+        <li><strong>Date:</strong> {{ event_time|date:"j F Y" }}</li>
+        <li><strong>Time:</strong> {{ event_time|time:"g:i A" }}</li>
+        <li><strong>IP address:</strong> {{ client_ip }}</li>
+        <li><strong>Browser:</strong> {{ browser }}</li>
+    </ul>
+    <p>
+        If this was you, no action is needed. If you did not create this account,
+        please ignore this message or contact HealthConnect support.
+    </p>
+</body>
+</html>

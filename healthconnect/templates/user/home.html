@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home | HealthConnect{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home.css' %}">{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="hero-copy">
+        <p class="eyebrow">HealthConnect</p>
+        <h1>Welcome{% if user.is_authenticated %}, {{ user.email }}{% endif %}</h1>
+        <p>Your care, medicines, appointments, and inbox updates in one bright dashboard.</p>
+        <!-- <div class="hero-actions">
+            <a href="{% url 'doctors' %}" class="btn">Find Doctors</a>
+            <a href="{% url 'medicine_finder' %}" class="btn btn-secondary">Find Medicines</a>
+        </div> -->
+    </div>
+    <!-- <div class="hero-media">
+        <img src="{% static 'img/auth-care-collage.png' %}" alt="HealthConnect dashboard preview">
+    </div> -->
+</div>
+
+<div class="quick-links">
+    <a href="{% url 'doctors' %}" class="quick-link">
+        <span class="quick-icon">01</span>
+        <h3>Find Doctors</h3>
+        <p>Browse specialists and book available slots.</p>
+    </a>
+    <a href="{% url 'medicines' %}" class="quick-link">
+        <span class="quick-icon">02</span>
+        <h3>Order Medicines</h3>
+        <p>Browse pharmacy and place orders with confirmation.</p>
+    </a>
+    <a href="{% url 'medicine_finder' %}" class="quick-link">
+        <span class="quick-icon">03</span>
+        <h3>Medicine Finder</h3>
+        <p>Search inventory with price and stock filters.</p>
+    </a>
+    <a href="{% url 'user_appointments' %}" class="quick-link">
+        <span class="quick-icon">04</span>
+        <h3>My Appointments</h3>
+        <p>Track pending and confirmed consultations.</p>
+    </a>
+    <a href="{% url 'health_tools' %}" class="quick-link">
+        <span class="quick-icon">05</span>
+        <h3>Health Tools</h3>
+        <p>Plan BMI, hydration, and medicine reminder timing.</p>
+    </a>
+</div>
+{% endblock %}

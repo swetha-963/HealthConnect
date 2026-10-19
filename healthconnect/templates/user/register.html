@@ -1,0 +1,26 @@
+{% extends 'auth_base.html' %}
+{% load static %}
+{% block title %}Register | HealthConnect{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/register.css' %}">{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <div class="tabs">
+        <a href="{% url 'login' %}">Sign In</a>
+        <button class="active" type="button">Sign Up</button>
+    </div>
+    <h2>Create your account</h2>
+    <p>Use an inbox you can open. We send a verification link before your account goes live.</p>
+    <form method="POST">
+        {% csrf_token %}
+        <label>Email</label>
+        <input type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+        <span class="form-hint">Gmail dot and plus aliases count as the same email.</span>
+        <label>Password</label>
+        <input type="password" name="password" required autocomplete="new-password" placeholder="Min 8 chars, upper, lower, number, special">
+        <label>Confirm Password</label>
+        <input type="password" name="confirm_password" required autocomplete="new-password" placeholder="Re-enter password">
+        <button type="submit">Create Account</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+Welcome to HealthConnect
+
+Hello {{ user.email }},
+
+Your email has been verified and your HealthConnect account is ready.
+
+Website: {{ site_url }}
+Date: {{ event_time|date:"j F Y" }}
+Time: {{ event_time|time:"g:i A" }}
+
+You can now book doctor consultations, order medicines, and track your healthcare activity from your account.
+
+Thank you for choosing HealthConnect.

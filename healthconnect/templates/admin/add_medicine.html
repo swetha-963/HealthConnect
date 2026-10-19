@@ -1,0 +1,90 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}
+Add Medicine | HealthConnect Admin
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-header">
+    Add Medicine
+</h1>
+
+<div class="form-card">
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+    >
+
+        {% csrf_token %}
+
+        <label>
+            Name
+        </label>
+
+        <input
+            type="text"
+            name="name"
+            required
+            placeholder="Paracetamol 500mg"
+        >
+
+
+        <label>
+            Description
+        </label>
+
+        <textarea
+            name="description"
+            rows="3"
+            placeholder="Pain relief and fever reducer"
+        ></textarea>
+
+
+        <label>
+            Price (₹)
+        </label>
+
+        <input
+            type="number"
+            name="price"
+            step="0.01"
+            min="0"
+            required
+        >
+
+
+        <label>
+            Stock
+        </label>
+
+        <input
+            type="number"
+            name="stock"
+            value="0"
+            min="0"
+            required
+        >
+
+
+        <label>
+            Medicine Image
+        </label>
+
+        <input
+            type="file"
+            name="image"
+            accept="image/*"
+        >
+
+
+        <button type="submit">
+            Add Medicine
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

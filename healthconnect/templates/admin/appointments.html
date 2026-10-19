@@ -1,0 +1,180 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}
+Appointments | HealthConnect Admin
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-header">
+    Appointments
+</h1>
+
+{% if appointments %}
+
+<table class="data-table">
+
+    <thead>
+        <tr>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for appt in appointments %}
+
+        <tr>
+
+            <td>
+                {{ appt.user.email }}
+            </td>
+
+            <td>
+                {{ appt.doctor.name }}
+            </td>
+
+            <td>
+                {{ appt.date|date:"j M Y" }}
+            </td>
+
+            <td>
+                {{ appt.time|time:"g:i A" }}
+            </td>
+
+            <td>
+
+                {% if appt.confirmed %}
+
+                    <span class="badge badge-confirmed">
+                        Confirmed
+                    </span>
+
+                {% else %}
+
+                    <span class="badge badge-pending">
+                        Pending
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+            <td class="action-buttons">
+
+                {% if not appt.confirmed %}
+
+                <form
+                    method="POST"
+                    class="inline-form"
+                >
+
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="appointment_id"
+                        value="{{ appt.id }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="confirm"
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-sm"
+                    >
+                        Confirm
+                    </button>
+
+                </form>
+
+                <form
+                    method="POST"
+                    class="inline-form"
+                >
+
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="appointment_id"
+                        value="{{ appt.id }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="reject"
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger btn-sm"
+                    >
+                        Reject
+                    </button>
+
+                </form>
+
+                {% else %}
+
+                <form
+                    method="POST"
+                    class="inline-form"
+                >
+
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="appointment_id"
+                        value="{{ appt.id }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="cancel"
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-secondary btn-sm"
+                    >
+                        Cancel
+                    </button>
+
+                </form>
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<div class="empty-state">
+
+    <h3>No appointments</h3>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

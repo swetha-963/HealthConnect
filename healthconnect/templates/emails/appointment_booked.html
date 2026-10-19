@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; color: #0f172a;">
+    <h2>Appointment Request Received</h2>
+    <p>Hello {{ user.email }},</p>
+    <p>Your consultation request with <strong>Dr. {{ doctor.name }}</strong> has been received.</p>
+    <ul>
+        <li><strong>Date:</strong> {{ appointment.date|date:"j F Y" }}</li>
+        <li><strong>Time:</strong> {{ appointment.time|time:"g:i A" }}</li>
+        <li><strong>Status:</strong> Pending confirmation</li>
+    </ul>
+    <p>You will receive another email once the appointment is confirmed.</p>
+    <p>Thank you for using HealthConnect.</p>
+</body>
+</html>

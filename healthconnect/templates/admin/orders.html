@@ -1,0 +1,129 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Orders | HealthConnect Admin{% endblock %}
+
+{% block content %}
+<div class="orders-page">
+
+    <div class="page-header-wrapper">
+        <div>
+            <h1 class="page-header">Orders</h1>
+            <p class="page-subtitle">Manage and update customer medicine orders.</p>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if orders %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>User</th>
+                        <th>Medicine</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Update</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>
+                                <strong>
+                                    #{{ order.order_id|default:order.id }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ order.user.email|default:order.user.username }}
+                            </td>
+
+                            <td>
+                                <div class="medicine-info">
+                                    {% if order.medicine.image %}
+                                        <img
+                                            src="{{ order.medicine.image.url }}"
+                                            alt="{{ order.medicine.name }}"
+                                            class="medicine-image"
+                                        >
+                                    {% endif %}
+
+                                    <span>{{ order.medicine.name }}</span>
+                                </div>
+                            </td>
+
+                            <td>
+                                ₹{{ order.medicine.price }}
+                            </td>
+
+                            <td>
+                                {% if order.status %}
+                                    <span class="badge badge-{{ order.status|lower }}">
+                                        {{ order.get_status_display }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-pending">
+                                        Pending
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{ order.created_at|date:"j M Y, h:i A" }}
+                            </td>
+
+                            <td>
+                                <form
+                                    method="POST"
+                                    action="{% url 'admin_orders' %}"
+                                    class="inline-form"
+                                >
+                                    {% csrf_token %}
+
+                                    <input
+                                        type="hidden"
+                                        name="order_id"
+                                        value="{{ order.id }}"
+                                    >
+
+                                    <select name="status" class="status-select">
+                                        {% for value, label in order.STATUS_CHOICES %}
+                                            <option
+                                                value="{{ value }}"
+                                                {% if order.status == value %}selected{% endif %}
+                                            >
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <button type="submit" class="btn btn-sm">
+                                        Update
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <h3>No orders yet</h3>
+            <p>Customer orders will appear here after they place an order.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

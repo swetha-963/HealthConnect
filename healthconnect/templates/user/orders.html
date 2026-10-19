@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Orders | HealthConnect{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/orders.css' %}">{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>My Orders</h1>
+    <p>View your medicine order history.</p>
+</div>
+
+{% if orders %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Medicine</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.order_id }}</td>
+            <td>{{ order.medicine.name }}</td>
+            <td>₹{{ order.medicine.price }}</td>
+            <td><span class="badge badge-{{ order.status|lower }}">{{ order.get_status_display }}</span></td>
+            <td>{{ order.created_at|date:"j M Y, g:i A" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <h3>No orders yet</h3>
+    <p><a href="{% url 'medicines' %}">Browse medicines</a> to place an order.</p>
+</div>
+{% endif %}
+{% endblock %}

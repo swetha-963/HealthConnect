@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | HealthConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/features.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Patient Dashboard</h1>
+    <p>Your appointments, orders, and quick next actions in one place.</p>
+</div>
+
+<div class="feature-stat-grid">
+    <div class="feature-stat">
+        <span>{{ total_appointments }}</span>
+        <p>Total Appointments</p>
+    </div>
+    <div class="feature-stat">
+        <span>{{ pending_appointments }}</span>
+        <p>Pending Appointments</p>
+    </div>
+    <div class="feature-stat">
+        <span>{{ active_orders }}</span>
+        <p>Active Orders</p>
+    </div>
+</div>
+
+<div class="feature-split">
+    <section>
+        <div class="section-heading">
+            <h2>Upcoming Appointments</h2>
+            <a href="{% url 'user_appointments' %}">View all</a>
+        </div>
+
+        {% if upcoming_appointments %}
+        <table class="data-table compact-table">
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in upcoming_appointments %}
+                <tr>
+                    <td>{{ appointment.doctor.name }}</td>
+                    <td>{{ appointment.date|date:"j M Y" }} at {{ appointment.time|time:"g:i A" }}</td>
+                    <td>
+                        {% if appointment.confirmed %}
+                        <span class="badge badge-confirmed">Confirmed</span>
+                        {% else %}
+                        <span class="badge badge-pending">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-panel">
+            <h3>No upcoming appointments</h3>
+            <a href="{% url 'doctors' %}" class="btn btn-sm">Find a Doctor</a>
+        </div>
+        {% endif %}
+    </section>
+
+    <section>
+        <div class="section-heading">
+            <h2>Recent Orders</h2>
+            <a href="{% url 'user_orders' %}">View all</a>
+        </div>
+
+        {% if recent_orders %}
+        <table class="data-table compact-table">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td>{{ order.medicine.name }}</td>
+                    <td>
+                        <span class="badge badge-{{ order.status|lower }}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td>₹{{ order.medicine.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-panel">
+            <h3>No orders yet</h3>
+            <a href="{% url 'medicine_finder' %}" class="btn btn-sm">Find Medicines</a>
+        </div>
+        {% endif %}
+    </section>
+</div>
+
+<section class="feature-band">
+    <div class="section-heading">
+        <h2>Available Medicines</h2>
+        <a href="{% url 'medicine_finder' %}">Open finder</a>
+    </div>
+
+    {% if recommended_medicines %}
+    <div class="mini-card-row">
+        {% for medicine in recommended_medicines %}
+        <article class="mini-card">
+            <h3>{{ medicine.name }}</h3>
+            <p>₹{{ medicine.price }} · {{ medicine.stock }} in stock</p>
+            <a href="{% url 'order' medicine.id %}" class="btn btn-sm">Buy</a>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="muted-copy">No new medicine suggestions right now.</p>
+    {% endif %}
+</section>
+
+{% endblock %}

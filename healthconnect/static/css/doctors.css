@@ -1,0 +1,18 @@
+.doctor-card .fee {
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-top: 8px;
+}
+
+.doctor-card .clinic {
+    font-style: italic;
+}
+
+.doctor-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 8px 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}

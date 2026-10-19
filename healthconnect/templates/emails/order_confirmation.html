@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; color: #0f172a;">
+    <h2>Your HealthConnect Order Has Been Placed</h2>
+    <p>Your order for <strong>{{ medicine.name }}</strong> has been placed successfully.</p>
+    <ul>
+        <li><strong>Order ID:</strong> {{ order.order_id }}</li>
+        <li><strong>Price:</strong> ₹{{ medicine.price }}</li>
+        <li><strong>Status:</strong> {{ order.get_status_display }}</li>
+    </ul>
+    <p>Thank you for choosing HealthConnect.</p>
+</body>
+</html>

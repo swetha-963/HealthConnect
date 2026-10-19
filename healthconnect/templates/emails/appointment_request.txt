@@ -1,0 +1,13 @@
+New Appointment Request
+
+Hello Dr. {{ doctor.name }},
+
+A new consultation request has been created.
+
+Patient: {{ patient_email }}
+Date: {{ date|date:"j F Y" }}
+Time: {{ time|time:"g:i A" }}
+
+Please confirm the appointment in the admin dashboard.
+
+HealthConnect

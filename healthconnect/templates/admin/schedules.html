@@ -1,0 +1,129 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}
+Schedules | HealthConnect Admin
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-header">
+    Doctor Schedules
+</h1>
+
+{% if schedules %}
+
+<table class="data-table">
+
+    <thead>
+        <tr>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Availability</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for schedule in schedules %}
+
+        <tr>
+
+            <td>
+                {{ schedule.doctor.name }}
+            </td>
+
+            <td>
+                {{ schedule.date|date:"j M Y" }}
+            </td>
+
+            <td>
+                {{ schedule.time|time:"g:i A" }}
+            </td>
+
+            <td>
+
+                {% if schedule.is_available %}
+
+                    <span class="badge badge-confirmed">
+                        Available
+                    </span>
+
+                {% else %}
+
+                    <span class="badge badge-pending">
+                        Booked
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {% if schedule.is_available %}
+
+                <form
+                    method="POST"
+                    class="inline-form"
+                >
+
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="delete"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="schedule_id"
+                        value="{{ schedule.id }}"
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger btn-sm"
+                    >
+                        Delete
+                    </button>
+
+                </form>
+
+                {% else %}
+
+                    <span>
+                        Booked
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<div class="empty-state">
+
+    <h3>No schedules</h3>
+
+    <p>
+        <a href="{% url 'add_schedule' %}">
+            Add a schedule
+        </a>
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

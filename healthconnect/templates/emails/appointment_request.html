@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html>
+
+<body
+    style="
+        font-family: Arial, sans-serif;
+        color: #0f172a;
+    "
+>
+
+<h2>
+    New Appointment Request
+</h2>
+
+<p>
+    Hello Dr. {{ doctor.name }},
+</p>
+
+<p>
+    A new consultation request has been created.
+</p>
+
+<ul>
+
+    <li>
+        <strong>Patient:</strong>
+        {{ patient_email }}
+    </li>
+
+    <li>
+        <strong>Date:</strong>
+        {{ date|date:"j F Y" }}
+    </li>
+
+    <li>
+        <strong>Time:</strong>
+        {{ time|time:"g:i A" }}
+    </li>
+
+</ul>
+
+<p>
+    Please confirm the appointment in the admin dashboard.
+</p>
+
+<p>
+    — HealthConnect
+</p>
+
+</body>
+
+</html>

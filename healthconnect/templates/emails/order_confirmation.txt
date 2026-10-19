@@ -1,0 +1,9 @@
+Your HealthConnect Order Has Been Placed
+
+Your order for {{ medicine.name }} has been placed successfully.
+
+Order ID: {{ order.order_id }}
+Price: ₹{{ medicine.price }}
+Status: {{ order.get_status_display }}
+
+Thank you for choosing HealthConnect.

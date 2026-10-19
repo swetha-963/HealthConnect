@@ -1,0 +1,27 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Medicines | HealthConnect Admin{% endblock %}
+
+{% block content %}
+<h1 class="page-header">Medicines</h1>
+<a href="{% url 'add_medicine' %}" class="btn" style="margin-bottom:20px;">+ Add Medicine</a>
+
+{% if medicines %}
+<table class="data-table">
+    <thead>
+        <tr><th>Name</th><th>Description</th><th>Price</th><th>Stock</th></tr>
+    </thead>
+    <tbody>
+        {% for medicine in medicines %}
+        <tr>
+            <td>{{ medicine.name }}</td>
+            <td>{{ medicine.description|truncatewords:10 }}</td>
+            <td>₹{{ medicine.price }}</td>
+            <td>{{ medicine.stock }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state"><h3>No medicines</h3><p><a href="{% url 'add_medicine' %}">Add medicine</a></p></div>
+{% endif %}
+{% endblock %}

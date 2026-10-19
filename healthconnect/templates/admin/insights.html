@@ -1,0 +1,171 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Insights | HealthConnect Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/features.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-page-heading">
+    <div>
+        <h1>Insights</h1>
+        <p>Operational signals across appointments, orders, and inventory.</p>
+    </div>
+
+    <div class="export-actions">
+        <a href="{% url 'export_orders_csv' %}" class="btn btn-secondary">Export Orders</a>
+        <a href="{% url 'export_appointments_csv' %}" class="btn btn-secondary">Export Appointments</a>
+    </div>
+</div>
+
+<div class="feature-stat-grid">
+    <div class="feature-stat">
+        <span>₹{{ estimated_revenue }}</span>
+        <p>Estimated Revenue</p>
+    </div>
+    <div class="feature-stat">
+        <span>{{ low_stock_medicines|length }}</span>
+        <p>Low Stock Items</p>
+    </div>
+    <div class="feature-stat">
+        <span>{{ pending_appointments|length }}</span>
+        <p>Pending Requests</p>
+    </div>
+</div>
+
+<div class="feature-split">
+    <section>
+        <h2 class="section-title">Order Status</h2>
+        {% if order_status_counts %}
+        <table class="data-table compact-table">
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for status in order_status_counts %}
+                <tr>
+                    <td>
+                        <span class="badge badge-{{ status.status|lower }}">
+                            {{ status.label }}
+                        </span>
+                    </td>
+                    <td>{{ status.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="muted-copy">No orders yet.</p>
+        {% endif %}
+    </section>
+
+    <section>
+        <h2 class="section-title">Top Medicines</h2>
+        {% if top_medicines %}
+        <table class="data-table compact-table">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Orders</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medicine in top_medicines %}
+                <tr>
+                    <td>{{ medicine.name }}</td>
+                    <td>{{ medicine.order_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="muted-copy">No medicine order trends yet.</p>
+        {% endif %}
+    </section>
+</div>
+
+<h2 class="section-title">Low Stock Inventory</h2>
+{% if low_stock_medicines %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Medicine</th>
+            <th>Stock</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for medicine in low_stock_medicines %}
+        <tr>
+            <td>{{ medicine.name }}</td>
+            <td>{{ medicine.stock }}</td>
+            <td>₹{{ medicine.price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="muted-copy">No medicines at or below {{ low_stock_threshold }} units.</p>
+{% endif %}
+
+<div class="feature-split">
+    <section>
+        <h2 class="section-title">Pending Appointments</h2>
+        {% if pending_appointments %}
+        <table class="data-table compact-table">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in pending_appointments %}
+                <tr>
+                    <td>{{ appointment.user.email }}</td>
+                    <td>{{ appointment.doctor.name }}</td>
+                    <td>{{ appointment.date|date:"j M Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="muted-copy">No pending appointments.</p>
+        {% endif %}
+    </section>
+
+    <section>
+        <h2 class="section-title">Next Available Slots</h2>
+        {% if next_available_slots %}
+        <table class="data-table compact-table">
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slot in next_available_slots %}
+                <tr>
+                    <td>{{ slot.doctor.name }}</td>
+                    <td>{{ slot.date|date:"j M Y" }}</td>
+                    <td>{{ slot.time|time:"g:i A" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="muted-copy">No upcoming open slots.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

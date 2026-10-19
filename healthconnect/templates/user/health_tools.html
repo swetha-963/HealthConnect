@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Health Tools | HealthConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/features.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Health Tools</h1>
+    <p>Quick calculators for everyday planning.</p>
+</div>
+
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
+{% if result %}
+<section class="result-panel">
+    <p>{{ result.title }}</p>
+    <strong>{{ result.primary }}</strong>
+    <span>{{ result.secondary }}</span>
+
+    {% if result.items %}
+    <div class="reminder-times">
+        {% for item in result.items %}
+        <span>{{ item }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>
+{% endif %}
+
+<div class="tool-grid">
+    <form method="post" class="tool-panel">
+        {% csrf_token %}
+        <input type="hidden" name="tool" value="bmi">
+
+        <h2>BMI</h2>
+        <label for="weight_kg">Weight (kg)</label>
+        <input id="weight_kg" type="number" step="0.1" min="1" name="weight_kg">
+
+        <label for="height_cm">Height (cm)</label>
+        <input id="height_cm" type="number" step="0.1" min="1" name="height_cm">
+
+        <button type="submit">Calculate</button>
+    </form>
+
+    <form method="post" class="tool-panel">
+        {% csrf_token %}
+        <input type="hidden" name="tool" value="hydration">
+
+        <h2>Hydration</h2>
+        <label for="hydration_weight_kg">Weight (kg)</label>
+        <input
+            id="hydration_weight_kg"
+            type="number"
+            step="0.1"
+            min="1"
+            name="hydration_weight_kg"
+        >
+
+        <label for="activity_minutes">Activity (minutes)</label>
+        <input
+            id="activity_minutes"
+            type="number"
+            step="1"
+            min="0"
+            name="activity_minutes"
+            value="0"
+        >
+
+        <button type="submit">Estimate</button>
+    </form>
+
+    <form method="post" class="tool-panel">
+        {% csrf_token %}
+        <input type="hidden" name="tool" value="reminder">
+
+        <h2>Reminder Plan</h2>
+        <label for="medicine_name">Medicine</label>
+        <input id="medicine_name" type="text" name="medicine_name">
+
+        <label for="doses_per_day">Doses per day</label>
+        <input
+            id="doses_per_day"
+            type="number"
+            min="1"
+            max="6"
+            name="doses_per_day"
+        >
+
+        <label for="start_time">Start time</label>
+        <input id="start_time" type="time" name="start_time">
+
+        <button type="submit">Build Plan</button>
+    </form>
+</div>
+
+<p class="care-note">
+    These tools are for planning only. Follow medical advice from a qualified clinician.
+</p>
+
+{% endblock %}

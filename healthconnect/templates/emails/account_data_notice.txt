@@ -1,0 +1,17 @@
+You shared account data with {{ site_name }}
+
+Hello {{ user.email }},
+
+Your email address was verified and your {{ site_name }} account is now connected to this website.
+
+Data shared with {{ site_name }}:
+{% for item in shared_data %}- {{ item }}
+{% endfor %}
+Activity details:
+Website: {{ site_url }}
+Date: {{ event_time|date:"j F Y" }}
+Time: {{ event_time|time:"g:i A" }}
+IP address: {{ client_ip }}
+Browser: {{ browser }}
+
+If this was you, no action is needed. If you did not create this account, please ignore this message or contact HealthConnect support.

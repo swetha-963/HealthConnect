@@ -1,0 +1,78 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}
+Doctors | HealthConnect Admin
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-header">Doctors</h1>
+
+<a href="{% url 'add_doctor' %}" class="btn">
+    + Add Doctor
+</a>
+
+{% if doctors %}
+
+<div class="card-grid">
+
+    {% for doctor in doctors %}
+
+    <div class="card">
+
+        {% if doctor.profile_image %}
+            <img
+                src="{{ doctor.profile_image.url }}"
+                alt="{{ doctor.name }}"
+                style="width:100px;height:100px;object-fit:cover;border-radius:50%;"
+            >
+        {% endif %}
+
+        <h3>{{ doctor.name }}</h3>
+
+        <p>{{ doctor.specialization }}</p>
+
+        <p>{{ doctor.email }}</p>
+
+        <p>
+            Fee: ₹{{ doctor.fee }}
+        </p>
+
+        <p>
+            Experience:
+            {{ doctor.experience }} years
+        </p>
+
+        {% if doctor.clinic_hospital %}
+            <p>
+                {{ doctor.clinic_hospital }}
+            </p>
+        {% endif %}
+
+        <p>
+            {{ doctor.schedules.count }} schedule(s)
+        </p>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+    <h3>No doctors</h3>
+
+    <p>
+        <a href="{% url 'add_doctor' %}">
+            Add a doctor
+        </a>
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

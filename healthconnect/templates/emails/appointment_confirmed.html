@@ -1,0 +1,64 @@
+<!-- <!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; color: #0f172a;">
+    <h2>Appointment Confirmed</h2>
+    <p>Hello,</p>
+    <p>Your appointment with <strong>Dr. {{ doctor.name }}</strong> has been confirmed.</p>
+    <ul>
+        <li><strong>Date:</strong> {{ appointment.date|date:"j F Y" }}</li>
+        <li><strong>Time:</strong> {{ appointment.time|time:"g:i A" }}</li>
+    </ul>
+    <p>Thank you for using HealthConnect.</p>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+
+<html>
+
+<body
+    style="
+        font-family: Arial, sans-serif;
+        color: #0f172a;
+    "
+>
+
+<h2>
+    Appointment Confirmed
+</h2>
+
+<p>
+    Hello,
+</p>
+
+<p>
+    Your appointment with
+    <strong>
+        Dr. {{ doctor.name }}
+    </strong>
+    has been confirmed.
+</p>
+
+<ul>
+
+    <li>
+        <strong>Date:</strong>
+        {{ appointment.date|date:"j F Y" }}
+    </li>
+
+    <li>
+        <strong>Time:</strong>
+        {{ appointment.time|time:"g:i A" }}
+    </li>
+
+</ul>
+
+<p>
+    Thank you for using HealthConnect.
+</p>
+
+</body>
+
+</html>

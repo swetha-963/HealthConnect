@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Medicines | HealthConnect{% endblock %}
+
+{% block extra_css %}
+<link
+    rel="stylesheet"
+    href="{% static 'css/medicines.css' %}"
+>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>Medicines</h1>
+
+    <p>
+        Browse and order medicines with confirmation.
+    </p>
+
+</div>
+
+{% if medicines %}
+
+<div class="card-grid">
+
+    {% for medicine in medicines %}
+
+    <div class="card">
+
+        {% if medicine.image %}
+
+        <img
+            src="{{ medicine.image.url }}"
+            alt="{{ medicine.name }}"
+            class="medicine-image"
+        >
+
+        {% endif %}
+
+        <h3>
+            {{ medicine.name }}
+        </h3>
+
+        {% if medicine.description %}
+
+        <p>
+            {{ medicine.description }}
+        </p>
+
+        {% endif %}
+
+        <p>
+            <strong>Price:</strong>
+            ₹{{ medicine.price }}
+        </p>
+
+        <p>
+            <strong>Stock:</strong>
+            {{ medicine.stock }}
+        </p>
+
+        <div class="card-actions">
+
+            {% if medicine.stock > 0 %}
+
+                {% if user.is_authenticated %}
+
+                    <a
+                        href="{% url 'order' medicine.id %}"
+                        class="btn"
+                    >
+                        Buy
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="{% url 'login' %}"
+                        class="btn"
+                    >
+                        Login to Buy
+                    </a>
+
+                {% endif %}
+
+            {% else %}
+
+                <span class="badge badge-rejected">
+                    Out of Stock
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+    <h3>No medicines listed</h3>
+
+    <p>
+        Please check back later.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

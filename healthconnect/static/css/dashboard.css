@@ -1,0 +1,90 @@
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 240px;
+    background: linear-gradient(180deg, #1e3a8a 0%, #020617 100%);
+    color: #fff;
+    padding: 28px 20px;
+    flex-shrink: 0;
+}
+
+.admin-sidebar h2 {
+    font-size: 1.2rem;
+}
+
+.admin-subtitle {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-bottom: 28px;
+}
+
+.admin-sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-sidebar nav a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.admin-sidebar nav a:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.sidebar-logout {
+    margin-top: 20px;
+    color: #fca5a5 !important;
+}
+
+.admin-main {
+    flex: 1;
+    padding: 32px;
+    overflow-x: auto;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e3a8a;
+}
+
+.stat-card .stat-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.section-title {
+    font-size: 1.15rem;
+    margin: 24px 0 12px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}

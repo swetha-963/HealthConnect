@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Appointments | HealthConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/appointments.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="appointments-page">
+
+    <div class="page-heading">
+        <p class="eyebrow">HEALTHCARE SERVICES</p>
+        <h1>My Appointments</h1>
+        <p>View your consultation requests and confirmed appointments.</p>
+    </div>
+
+    <div class="appointments-list">
+
+        {% for appointment in appointments %}
+            <div class="appointment-card">
+
+                <div class="doctor-info">
+                    <h2>{{ appointment.doctor.name }}</h2>
+                    <p>{{ appointment.doctor.specialization }}</p>
+                </div>
+
+                <div class="appointment-details">
+                    <div>
+                        <span>Date</span>
+                        <strong>{{ appointment.date }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Time</span>
+                        <strong>{{ appointment.time }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Status</span>
+
+                        {% if appointment.confirmed %}
+                            <strong class="status confirmed">
+                                Confirmed
+                            </strong>
+                        {% else %}
+                            <strong class="status pending">
+                                Pending
+                            </strong>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        {% empty %}
+            <div class="empty-state">
+                <h2>No appointments yet</h2>
+                <p>Book a consultation with one of our doctors.</p>
+
+                <a href="{% url 'doctors' %}" class="primary-button">
+                    Find Doctors
+                </a>
+            </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+{% endblock %}

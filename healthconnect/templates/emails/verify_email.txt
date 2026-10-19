@@ -1,0 +1,16 @@
+Verify your email for {{ site_name }}
+
+Hello {{ user.email }},
+
+You are receiving this email because this address was used to create an account on {{ site_name }}.
+
+Website: {{ site_url }}
+Date: {{ event_time|date:"j F Y" }}
+Time: {{ event_time|time:"g:i A" }}
+
+Please verify your email address before signing in:
+{{ verification_url }}
+
+If this was not you, you can ignore this email.
+
+Thank you for using {{ site_name }}.

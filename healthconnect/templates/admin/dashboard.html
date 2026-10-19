@@ -1,0 +1,210 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}
+Dashboard | HealthConnect Admin
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-header">
+    Dashboard
+</h1>
+
+<div class="stat-grid">
+
+    <div class="stat-card">
+        <div class="stat-value">
+            {{ doctors_count }}
+        </div>
+        <div class="stat-label">
+            Doctors
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-value">
+            {{ schedules_count }}
+        </div>
+        <div class="stat-label">
+            Schedules
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-value">
+            {{ appointments_count }}
+        </div>
+        <div class="stat-label">
+            Appointments
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-value">
+            {{ pending_appointments }}
+        </div>
+        <div class="stat-label">
+            Pending Appointments
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-value">
+            {{ medicines_count }}
+        </div>
+        <div class="stat-label">
+            Medicines
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-value">
+            {{ orders_count }}
+        </div>
+        <div class="stat-label">
+            Orders
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-value">
+            {{ users_count }}
+        </div>
+        <div class="stat-label">
+            Users
+        </div>
+    </div>
+
+</div>
+
+
+<h2 class="section-title">
+    Recent Appointments
+</h2>
+
+{% if recent_appointments %}
+
+<table class="data-table">
+
+    <thead>
+        <tr>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for appt in recent_appointments %}
+
+        <tr>
+
+            <td>
+                {{ appt.user.email }}
+            </td>
+
+            <td>
+                {{ appt.doctor.name }}
+            </td>
+
+            <td>
+                {{ appt.date|date:"j M Y" }}
+            </td>
+
+            <td>
+
+                {% if appt.confirmed %}
+
+                    <span class="badge badge-confirmed">
+                        Confirmed
+                    </span>
+
+                {% else %}
+
+                    <span class="badge badge-pending">
+                        Pending
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<p class="empty-state">
+    No appointments yet.
+</p>
+
+{% endif %}
+
+
+<h2 class="section-title">
+    Recent Orders
+</h2>
+
+{% if recent_orders %}
+
+<table class="data-table">
+
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>User</th>
+            <th>Medicine</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for order in recent_orders %}
+
+        <tr>
+
+            <td>
+                {{ order.order_id }}
+            </td>
+
+            <td>
+                {{ order.user.email }}
+            </td>
+
+            <td>
+                {{ order.medicine.name }}
+            </td>
+
+            <td>
+
+                <span class="badge badge-{{ order.status|lower }}">
+                    {{ order.get_status_display }}
+                </span>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<p class="empty-state">
+    No orders yet.
+</p>
+
+{% endif %}
+
+{% endblock %}

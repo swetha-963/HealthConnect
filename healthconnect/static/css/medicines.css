@@ -1,0 +1,5 @@
+/* Page-specific styles for medicines */
+
+.medicine-card .stock-low {
+    color: #dc2626;
+}

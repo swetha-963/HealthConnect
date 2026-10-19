@@ -1,0 +1,10 @@
+Appointment Confirmed
+
+Hello,
+
+Your appointment with Dr. {{ doctor.name }} has been confirmed.
+
+Date: {{ appointment.date|date:"j F Y" }}
+Time: {{ appointment.time|time:"g:i A" }}
+
+Thank you for using HealthConnect.

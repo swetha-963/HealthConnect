@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; color: #0f172a;">
+    <h2>Welcome to HealthConnect</h2>
+    <p>Hello {{ user.email }},</p>
+    <p>Your email has been verified and your HealthConnect account is ready.</p>
+    <ul>
+        <li><strong>Website:</strong> {{ site_url }}</li>
+        <li><strong>Date:</strong> {{ event_time|date:"j F Y" }}</li>
+        <li><strong>Time:</strong> {{ event_time|time:"g:i A" }}</li>
+    </ul>
+    <p>You can now book doctor consultations, order medicines, and track your healthcare activity from your account.</p>
+    <p>Thank you for choosing HealthConnect.</p>
+</body>
+</html>

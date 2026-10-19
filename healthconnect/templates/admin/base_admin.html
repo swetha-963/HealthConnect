@@ -1,0 +1,133 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+        Admin | HealthConnect
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/base.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/dashboard.css' %}"
+    >
+
+    {% block extra_css %}{% endblock %}
+
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <aside class="admin-sidebar">
+
+        <div class="admin-brand">
+            <span class="brand-mark">HC</span>
+            <div>
+                <h2>HealthConnect</h2>
+                <p class="admin-subtitle">
+                    Admin Studio
+                </p>
+            </div>
+        </div>
+
+        <nav>
+
+            <a href="{% url 'admin_dashboard' %}">
+                Dashboard
+            </a>
+
+            <a href="{% url 'admin_insights' %}">
+                Insights
+            </a>
+
+            <a href="{% url 'admin_doctors' %}">
+                Doctors
+            </a>
+
+            <a href="{% url 'admin_schedules' %}">
+                Schedules
+            </a>
+
+            <a href="{% url 'admin_appointments' %}">
+                Appointments
+            </a>
+
+            <a href="{% url 'admin_medicines' %}">
+                Medicines
+            </a>
+
+            <a href="{% url 'admin_orders' %}">
+                Orders
+            </a>
+
+            <hr>
+
+            <a href="{% url 'add_doctor' %}" class="sidebar-action">
+                Add Doctor
+            </a>
+
+            <a href="{% url 'add_schedule' %}" class="sidebar-action">
+                Add Schedule
+            </a>
+
+            <a href="{% url 'add_medicine' %}" class="sidebar-action">
+                Add Medicine
+            </a>
+
+            <a
+                href="{% url 'admin_logout' %}"
+                class="sidebar-logout"
+            >
+                Logout
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <main class="admin-main">
+
+        {% if messages %}
+
+            <div class="messages">
+
+                {% for message in messages %}
+
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
+

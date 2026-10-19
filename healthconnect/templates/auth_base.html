@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HealthConnect{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<div class="auth-wrapper">
+    <div class="auth-left">
+        <div class="brand-lockup">
+            <span class="brand-mark">HC</span>
+            <span>HealthConnect</span>
+        </div>
+        <div class="auth-hero-copy">
+            <p class="eyebrow">{% block auth_tagline %}Care that keeps up{% endblock %}</p>
+            <h1>Book care, manage medicines, and keep every update in your inbox.</h1>
+            <p class="hero-note">A secure healthcare space built for quick moves, clean records, and verified accounts.</p>
+        </div>
+        <div class="auth-visual">
+            <img src="{% static 'img/auth-care-collage.png' %}" alt="HealthConnect care dashboard preview" class="auth-visual-image">
+        </div>
+        <div class="auth-highlights">
+            <span>Verified email</span>
+            <span>Appointments</span>
+            <span>Medicine orders</span>
+        </div>
+        <div class="auth-metric-row" aria-label="HealthConnect highlights">
+            <div>
+                <strong>24/7</strong>
+                <span>Care access</span>
+            </div>
+            <div>
+                <strong>100%</strong>
+                <span>Email verified</span>
+            </div>
+            <div>
+                <strong>Fast</strong>
+                <span>Booking flow</span>
+            </div>
+        </div>
+        <footer>&copy; 2026 HealthConnect</footer>
+    </div>
+    <div class="auth-right">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+</div>
+</body>
+</html>

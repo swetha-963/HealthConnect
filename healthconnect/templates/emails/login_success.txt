@@ -1,0 +1,11 @@
+HealthConnect Login Notification
+
+Hello {{ user.email }},
+
+You are receiving this email because your email was used to sign in to {{ site_name }}.
+
+Website: {{ site_url }}
+Date: {{ login_time|date:"j F Y" }}
+Time: {{ login_time|time:"g:i A" }}
+
+If this was you, no action is needed. If this was not you, change your password immediately.

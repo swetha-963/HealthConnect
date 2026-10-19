@@ -1,0 +1,13 @@
+Appointment Request Received
+
+Hello {{ user.email }},
+
+Your consultation request with Dr. {{ doctor.name }} has been received.
+
+Date: {{ appointment.date|date:"j F Y" }}
+Time: {{ appointment.time|time:"g:i A" }}
+Status: Pending confirmation
+
+You will receive another email once the appointment is confirmed.
+
+Thank you for using HealthConnect.

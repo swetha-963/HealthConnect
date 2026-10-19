@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Doctors | HealthConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/doctors.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>Available Doctors</h1>
+
+    <p>
+        Choose a specialist and book from available schedules.
+    </p>
+
+</div>
+
+{% if doctors %}
+
+<div class="card-grid">
+
+    {% for doctor in doctors %}
+
+    <div class="card doctor-card">
+
+        {% if doctor.profile_image %}
+
+        <img
+            src="{{ doctor.profile_image.url }}"
+            alt="{{ doctor.name }}"
+            class="doctor-image"
+        >
+
+        {% endif %}
+
+        <h3>
+            {{ doctor.name }}
+        </h3>
+
+        <p>
+            {{ doctor.specialization }}
+        </p>
+
+        <div class="doctor-meta">
+
+            {% if doctor.experience %}
+            <span>
+                {{ doctor.experience }} yrs exp.
+            </span>
+            {% endif %}
+
+            {% if doctor.clinic_hospital %}
+            <span class="clinic">
+                {{ doctor.clinic_hospital }}
+            </span>
+            {% endif %}
+
+        </div>
+
+        <p class="fee">
+            Consultation Fee: ₹{{ doctor.fee }}
+        </p>
+
+        <div class="card-actions">
+
+            {% if user.is_authenticated %}
+
+            <a
+                href="{% url 'book' doctor.id %}"
+                class="btn"
+            >
+                Book Consultation
+            </a>
+
+            {% else %}
+
+            <a
+                href="{% url 'login' %}"
+                class="btn"
+            >
+                Login to Book
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+    <h3>No doctors available</h3>
+
+    <p>
+        Please check back later.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

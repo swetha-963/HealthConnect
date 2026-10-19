@@ -1,0 +1,23 @@
+{% extends 'auth_base.html' %}
+{% load static %}
+{% block title %}Login | HealthConnect{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/login.css' %}">{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <div class="tabs">
+        <button class="active" type="button">Sign In</button>
+        <a href="{% url 'register' %}">Sign Up</a>
+    </div>
+    <h2>Welcome back</h2>
+    <p>Sign in to continue to HealthConnect</p>
+    <form method="POST">
+        {% csrf_token %}
+        <label>Email</label>
+        <input type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+        <label>Password</label>
+        <input type="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
+        <button type="submit">Sign In</button>
+    </form>
+</div>
+{% endblock %}

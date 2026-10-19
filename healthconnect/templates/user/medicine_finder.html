@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Medicine Finder | HealthConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/features.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Medicine Finder</h1>
+    <p>Search pharmacy inventory by name, description, stock, and price.</p>
+</div>
+
+<form method="get" class="filter-panel">
+    <div>
+        <label for="q">Search</label>
+        <input
+            id="q"
+            type="search"
+            name="q"
+            value="{{ query }}"
+            placeholder="Medicine name or description"
+        >
+    </div>
+
+    <div>
+        <label for="max_price">Max price</label>
+        <input
+            id="max_price"
+            type="number"
+            min="0"
+            step="0.01"
+            name="max_price"
+            value="{{ max_price }}"
+            placeholder="Any"
+        >
+    </div>
+
+    <label class="checkbox-line">
+        <input
+            type="checkbox"
+            name="in_stock"
+            {% if in_stock_only %}checked{% endif %}
+        >
+        In stock only
+    </label>
+
+    <button type="submit">Apply Filters</button>
+    <a href="{% url 'medicine_finder' %}" class="btn btn-secondary">Reset</a>
+</form>
+
+<div class="result-summary">
+    <strong>{{ result_count }}</strong> medicine{{ result_count|pluralize }} found
+    <span>{{ stock_count }} currently in stock</span>
+</div>
+
+{% if medicines %}
+<div class="card-grid">
+    {% for medicine in medicines %}
+    <article class="card">
+        {% if medicine.image %}
+        <img
+            src="{{ medicine.image.url }}"
+            alt="{{ medicine.name }}"
+            class="finder-image"
+        >
+        {% endif %}
+
+        <h3>{{ medicine.name }}</h3>
+
+        {% if medicine.description %}
+        <p>{{ medicine.description }}</p>
+        {% endif %}
+
+        <p><strong>Price:</strong> ₹{{ medicine.price }}</p>
+        <p><strong>Stock:</strong> {{ medicine.stock }}</p>
+
+        <div class="card-actions">
+            {% if medicine.stock > 0 %}
+                {% if user.is_authenticated %}
+                <a href="{% url 'order' medicine.id %}" class="btn">Buy</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn">Login to Buy</a>
+                {% endif %}
+            {% else %}
+            <span class="badge badge-rejected">Out of Stock</span>
+            {% endif %}
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <h3>No matching medicines</h3>
+    <p>Try a different search or remove a filter.</p>
+</div>
+{% endif %}
+
+{% endblock %}

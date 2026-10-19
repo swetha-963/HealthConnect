@@ -1,0 +1,115 @@
+/* Page-specific styles for user appointments */
+.appointments-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 45px 24px;
+}
+
+.page-heading {
+    margin-bottom: 30px;
+}
+
+.eyebrow {
+    color: #3468d4;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.page-heading h1 {
+    color: #172d61;
+    font-size: 36px;
+    margin: 10px 0;
+}
+
+.page-heading p {
+    color: #71809b;
+}
+
+.appointments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.appointment-card {
+    background: white;
+    border: 1px solid #e1e7f0;
+    border-radius: 16px;
+    padding: 25px;
+}
+
+.doctor-info h2 {
+    color: #172d61;
+    margin: 0 0 8px;
+}
+
+.doctor-info p {
+    color: #71809b;
+    margin: 0;
+}
+
+.appointment-details {
+    display: flex;
+    gap: 60px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #edf0f5;
+}
+
+.appointment-details span,
+.appointment-details strong {
+    display: block;
+}
+
+.appointment-details span {
+    color: #8490a5;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.appointment-details strong {
+    color: #263b65;
+}
+
+.status.confirmed {
+    color: #218653;
+}
+
+.status.pending {
+    color: #b57914;
+}
+
+.empty-state {
+    text-align: center;
+    background: white;
+    border: 1px solid #e1e7f0;
+    border-radius: 16px;
+    padding: 60px 25px;
+}
+
+.empty-state h2 {
+    color: #172d61;
+}
+
+.empty-state p {
+    color: #71809b;
+    margin-bottom: 25px;
+}
+
+.primary-button {
+    display: inline-block;
+    background: #2854b7;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .appointment-details {
+        flex-direction: column;
+        gap: 18px;
+    }
+}

@@ -1,0 +1,50 @@
+.hero {
+    text-align: center;
+    padding: 48px 24px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    border-radius: 16px;
+    color: #fff;
+    margin-bottom: 32px;
+}
+
+.hero h1 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.hero p {
+    opacity: 0.9;
+    font-size: 1.05rem;
+}
+
+.quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.quick-link {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    text-decoration: none;
+    color: #0f172a;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.quick-link:hover {
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+    border-color: #1e3a8a;
+}
+
+.quick-link h3 {
+    font-size: 1rem;
+    margin-bottom: 6px;
+    color: #1e3a8a;
+}
+
+.quick-link p {
+    font-size: 0.85rem;
+    color: #64748b;
+}

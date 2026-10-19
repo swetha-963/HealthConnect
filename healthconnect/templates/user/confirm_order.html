@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirm Order | HealthConnect{% endblock %}
+
+{% block extra_css %}
+<link
+    rel="stylesheet"
+    href="{% static 'css/confirm_order.css' %}"
+>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>Confirm Order</h1>
+
+    <p>
+        Review your order before placing it.
+    </p>
+
+</div>
+
+<div class="form-card">
+
+    {% if medicine.image %}
+
+    <img
+        src="{{ medicine.image.url }}"
+        alt="{{ medicine.name }}"
+        style="width:150px;height:150px;object-fit:cover;border-radius:12px;"
+    >
+
+    {% endif %}
+
+    <h3>
+        {{ medicine.name }}
+    </h3>
+
+    {% if medicine.description %}
+
+    <p>
+        {{ medicine.description }}
+    </p>
+
+    {% endif %}
+
+    <p>
+        <strong>Price:</strong>
+        ₹{{ medicine.price }}
+    </p>
+
+    <p>
+        <strong>Stock remaining:</strong>
+        {{ medicine.stock }}
+    </p>
+
+    {% if medicine.stock > 0 %}
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <button type="submit">
+            Confirm Order
+        </button>
+
+        <a
+            href="{% url 'medicines' %}"
+            class="btn btn-secondary"
+        >
+            Cancel
+        </a>
+
+    </form>
+
+    {% else %}
+
+    <div class="alert alert-warning">
+        This medicine is currently out of stock.
+    </div>
+
+    <a
+        href="{% url 'medicines' %}"
+        class="btn"
+    >
+        Back to Medicines
+    </a>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
