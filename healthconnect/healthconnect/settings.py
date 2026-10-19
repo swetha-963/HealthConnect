@@ -9,6 +9,9 @@ import importlib.util
 import dj_database_url
 from dotenv import load_dotenv
 
+
+# import dj_database_url
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -63,6 +66,10 @@ SITE_ID = 1
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+
+    # Keep your other existing middleware below this.
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -108,11 +115,11 @@ WSGI_APPLICATION = "healthconnect.wsgi.application"
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 if DATABASE_URL:
     DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=True,
-        )
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        ssl_require=not DEBUG,
+    )
     }
 else:
     DATABASES = {
