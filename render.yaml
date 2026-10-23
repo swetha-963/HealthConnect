@@ -30,3 +30,7 @@ services:
         value: admin@healthconnect.com
       - key: ADMIN_PASSWORD
         generateValue: true
+      - key: RESEND_API_KEY
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        value: onboarding@resend.dev

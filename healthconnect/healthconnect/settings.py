@@ -66,10 +66,6 @@ SITE_ID = 1
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-
-    # Keep your other existing middleware below this.
-    "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -157,14 +153,23 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "login"
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com").strip()
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "").strip().replace(" ", "")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER).strip()
-EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "20"))
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "").strip()
+if DEBUG:
+    EMAIL_BACKEND = os.getenv(
+        "EMAIL_BACKEND",
+        "core.email_backends.ResendEmailBackend"
+        if RESEND_API_KEY
+        else "django.core.mail.backends.console.EmailBackend",
+    ).strip()
+else:
+    # Always use the HTTP API in production, even if an old SMTP setting remains
+    # in the host's environment.
+    EMAIL_BACKEND = "core.email_backends.ResendEmailBackend"
+
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    "onboarding@resend.dev",
+).strip()
 
 
 

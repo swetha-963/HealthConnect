@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password, check_password
 from django.conf import settings
-from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone

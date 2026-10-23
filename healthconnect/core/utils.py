@@ -89,7 +89,11 @@ def generate_order_id():
 
 def send_templated_email(subject, template_name, context, recipient_list):
     html_content = render_to_string(template_name, context)
-    text_content = render_to_string(template_name.replace(".html", ".txt"), context)
+    text_content = render_to_string(
+        template_name.replace(".html", ".txt"),
+        context,
+    )
+
     email = EmailMultiAlternatives(
         subject=subject,
         body=text_content,
@@ -97,4 +101,4 @@ def send_templated_email(subject, template_name, context, recipient_list):
         to=recipient_list,
     )
     email.attach_alternative(html_content, "text/html")
-    email.send(fail_silently=False)
+    return email.send(fail_silently=False)

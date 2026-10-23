@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
-    help = "Send a HealthConnect test email using the configured SMTP settings."
+    help = "Send a HealthConnect test email through the configured email backend."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -14,30 +14,27 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        recipient = options["recipient"] or settings.EMAIL_HOST_USER
+        if not settings.RESEND_API_KEY:
+            raise CommandError("Set RESEND_API_KEY before testing email delivery.")
 
-        if not settings.EMAIL_HOST_USER:
-            raise CommandError("EMAIL_HOST_USER is not configured in .env.")
-
-        if not settings.EMAIL_HOST_PASSWORD:
-            raise CommandError("EMAIL_HOST_PASSWORD is not configured in .env.")
-
-        if "your" in settings.EMAIL_HOST_PASSWORD.lower():
+        if settings.EMAIL_BACKEND != "core.email_backends.ResendEmailBackend":
             raise CommandError(
-                "EMAIL_HOST_PASSWORD still looks like a placeholder. "
-                "Use a real Gmail app password."
+                "The configured email backend is not Resend. Remove the local "
+                "EMAIL_BACKEND override before running this command."
             )
 
+        recipient = options["recipient"]
         if not recipient:
             raise CommandError(
-                "No recipient supplied and EMAIL_HOST_USER is empty."
+                "Pass a recipient email address, for example "
+                "delivered@resend.dev for a Resend delivery test."
             )
 
         sent = send_mail(
-            subject="HealthConnect SMTP Test",
+            subject="HealthConnect Email Test",
             message=(
                 "This is a test email from HealthConnect. "
-                "If you received this, SMTP is configured correctly."
+                "If you received this, email delivery is configured correctly."
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[recipient],
