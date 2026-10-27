@@ -1,7 +1,7 @@
 {% extends 'admin/base_admin.html' %}
 {% load static %}
 
-{% block title %}Add Doctor | HealthConnect Admin{% endblock %}
+{% block title %}{{ page_title }} | HealthConnect Admin{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/add_doctor.css' %}">
@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<h1 class="page-header">Add Doctor</h1>
+<h1 class="page-header">{{ page_title }}</h1>
 
 <div class="form-card">
 
@@ -17,73 +17,23 @@
 
         {% csrf_token %}
 
-        <label for="name">Doctor Name</label>
-        <input
-            type="text"
-            id="name"
-            name="name"
-            required
-            placeholder="Dr. Anjali Nair"
-        >
+        {% if form.non_field_errors %}
+        <div class="form-errors" role="alert">{{ form.non_field_errors }}</div>
+        {% endif %}
 
-        <label for="specialization">Specialization</label>
-        <input
-            type="text"
-            id="specialization"
-            name="specialization"
-            required
-            placeholder="General Physician"
-        >
-
-        <label for="email">Email</label>
-        <input
-            type="email"
-            id="email"
-            name="email"
-            required
-            placeholder="doctor@example.com"
-        >
-
-        <label for="fee">Consultation Fee (₹)</label>
-        <input
-            type="number"
-            id="fee"
-            name="fee"
-            step="0.01"
-            min="0"
-            required
-            placeholder="500.00"
-        >
-
-        <label for="experience">Experience (years)</label>
-        <input
-            type="number"
-            id="experience"
-            name="experience"
-            min="0"
-            value="0"
-            required
-        >
-
-        <label for="clinic_hospital">Clinic / Hospital</label>
-        <input
-            type="text"
-            id="clinic_hospital"
-            name="clinic_hospital"
-            placeholder="City Care Hospital"
-        >
-
-        <label for="profile_image">Profile Image</label>
-        <input
-            type="file"
-            id="profile_image"
-            name="profile_image"
-            accept="image/*"
-        >
+        {% for field in form %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+        <div class="form-errors" role="alert">{{ field.errors }}</div>
+        {% endif %}
+        {% endfor %}
 
         <button type="submit">
-            Add Doctor
+            {{ submit_label }}
         </button>
+
+        <a class="btn btn-secondary" href="{% url 'admin_doctors' %}">Cancel</a>
 
     </form>
 

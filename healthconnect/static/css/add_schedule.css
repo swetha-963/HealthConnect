@@ -3,3 +3,19 @@
 .form-card {
     max-width: 500px;
 }
+
+.form-errors {
+    margin: -8px 0 14px;
+    color: #b42318;
+    font-size: 0.85rem;
+}
+
+.form-hint a {
+    color: #0f766e;
+    font-weight: 700;
+}
+
+.form-card button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}

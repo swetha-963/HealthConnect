@@ -10,6 +10,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.conf import settings
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -23,7 +24,7 @@ from .models import (
     Order,
 )
 
-from .forms import DoctorForm, DoctorScheduleForm
+from .forms import DoctorForm, DoctorScheduleForm, MedicineForm
 from .decorators import admin_required
 from .utils import (
     validate_registration,
@@ -834,9 +835,48 @@ def add_doctor(request):
         request,
         "admin/add_doctor.html",
         {
-            "form": form
+            "form": form,
+            "page_title": "Add Doctor",
+            "submit_label": "Add Doctor",
         }
     )
+
+
+@admin_required
+def edit_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+
+    if request.method == "POST":
+        form = DoctorForm(request.POST, request.FILES, instance=doctor)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Doctor updated successfully.")
+            return redirect("admin_doctors")
+    else:
+        form = DoctorForm(instance=doctor)
+
+    return render(
+        request,
+        "admin/add_doctor.html",
+        {
+            "form": form,
+            "page_title": "Edit Doctor",
+            "submit_label": "Save Changes",
+        },
+    )
+
+
+@admin_required
+@require_POST
+def delete_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    doctor.delete()
+    messages.success(
+        request,
+        "Doctor and related schedules and appointments deleted.",
+    )
+    return redirect("admin_doctors")
 
 
 # =========================================================
@@ -873,8 +913,41 @@ def add_schedule(request):
         request,
         "admin/add_schedule.html",
         {
-            "form": form
+            "form": form,
+            "doctors_available": form.fields["doctor"].queryset.exists(),
+            "page_title": "Add Schedule",
+            "submit_label": "Add Schedule",
         }
+    )
+
+
+@admin_required
+def edit_schedule(request, schedule_id):
+    schedule = get_object_or_404(DoctorSchedule, id=schedule_id)
+
+    if not schedule.is_available:
+        messages.error(request, "Booked schedules cannot be edited.")
+        return redirect("admin_schedules")
+
+    if request.method == "POST":
+        form = DoctorScheduleForm(request.POST, instance=schedule)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Schedule updated successfully.")
+            return redirect("admin_schedules")
+    else:
+        form = DoctorScheduleForm(instance=schedule)
+
+    return render(
+        request,
+        "admin/add_schedule.html",
+        {
+            "form": form,
+            "doctors_available": form.fields["doctor"].queryset.exists(),
+            "page_title": "Edit Schedule",
+            "submit_label": "Save Changes",
+        },
     )
 
 
@@ -1072,84 +1145,59 @@ def admin_medicines(request):
 
 @admin_required
 def add_medicine(request):
-
     if request.method == "POST":
+        form = MedicineForm(request.POST, request.FILES)
 
-        name = request.POST.get(
-            "name",
-            ""
-        ).strip()
-
-        description = request.POST.get(
-            "description",
-            ""
-        ).strip()
-
-        price = request.POST.get(
-            "price",
-            "0"
-        )
-
-        stock = request.POST.get(
-            "stock",
-            "0"
-        )
-
-        image = request.FILES.get(
-            "image"
-        )
-
-        if not name:
-
-            messages.error(
-                request,
-                "Medicine name is required."
-            )
-
-            return redirect(
-                "add_medicine"
-            )
-
-        try:
-
-            price = float(price)
-            stock = int(stock)
-
-            if price < 0 or stock < 0:
-                raise ValueError
-
-        except ValueError:
-
-            messages.error(
-                request,
-                "Enter valid price and stock values."
-            )
-
-            return redirect(
-                "add_medicine"
-            )
-
-        Medicine.objects.create(
-            name=name,
-            description=description,
-            price=price,
-            stock=stock,
-            image=image
-        )
-
-        messages.success(
-            request,
-            "Medicine added successfully."
-        )
-
-        return redirect(
-            "admin_medicines"
-        )
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Medicine added successfully.")
+            return redirect("admin_medicines")
+    else:
+        form = MedicineForm()
 
     return render(
         request,
-        "admin/add_medicine.html"
+        "admin/add_medicine.html",
+        {
+            "form": form,
+            "page_title": "Add Medicine",
+            "submit_label": "Add Medicine",
+        },
     )
+
+
+@admin_required
+def edit_medicine(request, medicine_id):
+    medicine = get_object_or_404(Medicine, id=medicine_id)
+
+    if request.method == "POST":
+        form = MedicineForm(request.POST, request.FILES, instance=medicine)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Medicine updated successfully.")
+            return redirect("admin_medicines")
+    else:
+        form = MedicineForm(instance=medicine)
+
+    return render(
+        request,
+        "admin/add_medicine.html",
+        {
+            "form": form,
+            "page_title": "Edit Medicine",
+            "submit_label": "Save Changes",
+        },
+    )
+
+
+@admin_required
+@require_POST
+def delete_medicine(request, medicine_id):
+    medicine = get_object_or_404(Medicine, id=medicine_id)
+    medicine.delete()
+    messages.success(request, "Medicine and related orders deleted.")
+    return redirect("admin_medicines")
 
 
 # =========================================================

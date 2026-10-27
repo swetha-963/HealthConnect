@@ -1,7 +1,7 @@
 {% extends 'admin/base_admin.html' %}
 {% load static %}
 
-{% block title %}Add Schedule | HealthConnect Admin{% endblock %}
+{% block title %}{{ page_title }} | HealthConnect Admin{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/add_schedule.css' %}">
@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<h1 class="page-header">Add Schedule</h1>
+<h1 class="page-header">{{ page_title }}</h1>
 
 <div class="form-card">
 
@@ -17,45 +17,40 @@
 
         {% csrf_token %}
 
-        <label for="doctor_id">Doctor</label>
+        {% if form.non_field_errors %}
+        <div class="form-errors" role="alert">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
 
-        <select id="doctor_id" name="doctor_id" required>
+        <label for="id_doctor">Doctor</label>
+        {{ form.doctor }}
+        {% if form.doctor.errors %}
+        <div class="form-errors" role="alert">{{ form.doctor.errors }}</div>
+        {% endif %}
 
-            <option value="">
-                Select doctor
-            </option>
+        {% if not doctors_available %}
+        <p class="form-hint">
+            No doctors are available yet. <a href="{% url 'add_doctor' %}">Add a doctor</a> first.
+        </p>
+        {% endif %}
 
-            {% for doctor in doctors %}
+        <label for="id_date">Date</label>
+        {{ form.date }}
+        {% if form.date.errors %}
+        <div class="form-errors" role="alert">{{ form.date.errors }}</div>
+        {% endif %}
 
-            <option value="{{ doctor.id }}">
-                {{ doctor.name }} — {{ doctor.specialization }}
-            </option>
+        <label for="id_time">Time</label>
+        {{ form.time }}
+        {% if form.time.errors %}
+        <div class="form-errors" role="alert">{{ form.time.errors }}</div>
+        {% endif %}
 
-            {% endfor %}
-
-        </select>
-
-        <label for="date">Date</label>
-
-        <input
-            type="date"
-            id="date"
-            name="date"
-            required
-        >
-
-        <label for="time">Time</label>
-
-        <input
-            type="time"
-            id="time"
-            name="time"
-            required
-        >
-
-        <button type="submit">
-            Add Schedule
+        <button type="submit" {% if not doctors_available %}disabled{% endif %}>
+            {{ submit_label }}
         </button>
+        <a class="btn btn-secondary" href="{% url 'admin_schedules' %}">Cancel</a>
 
     </form>
 

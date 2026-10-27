@@ -8,7 +8,7 @@
 {% if medicines %}
 <table class="data-table">
     <thead>
-        <tr><th>Name</th><th>Description</th><th>Price</th><th>Stock</th></tr>
+        <tr><th>Name</th><th>Description</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
     </thead>
     <tbody>
         {% for medicine in medicines %}
@@ -17,6 +17,13 @@
             <td>{{ medicine.description|truncatewords:10 }}</td>
             <td>₹{{ medicine.price }}</td>
             <td>{{ medicine.stock }}</td>
+            <td>
+                <a href="{% url 'edit_medicine' medicine.id %}" class="btn btn-sm">Edit</a>
+                <form method="POST" action="{% url 'delete_medicine' medicine.id %}" class="inline-form" onsubmit="return confirm('Delete this medicine? Its related orders will also be deleted.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

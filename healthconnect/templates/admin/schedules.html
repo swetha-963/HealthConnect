@@ -10,6 +10,10 @@ Schedules | HealthConnect Admin
     Doctor Schedules
 </h1>
 
+<p style="margin-bottom: 20px;">
+    <a href="{% url 'add_schedule' %}" class="btn">+ Add Schedule</a>
+</p>
+
 {% if schedules %}
 
 <table class="data-table">
@@ -64,9 +68,12 @@ Schedules | HealthConnect Admin
 
                 {% if schedule.is_available %}
 
+                <a href="{% url 'edit_schedule' schedule.id %}" class="btn btn-sm">Edit</a>
+
                 <form
                     method="POST"
                     class="inline-form"
+                    onsubmit="return confirm('Delete this schedule?');"
                 >
 
                     {% csrf_token %}
@@ -94,9 +101,7 @@ Schedules | HealthConnect Admin
 
                 {% else %}
 
-                    <span>
-                        Booked
-                    </span>
+                    <span>Booked schedules cannot be edited or deleted.</span>
 
                 {% endif %}
 

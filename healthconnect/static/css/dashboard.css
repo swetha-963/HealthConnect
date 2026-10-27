@@ -88,3 +88,14 @@
     gap: 6px;
     flex-wrap: wrap;
 }
+
+.admin-main .form-errors {
+    margin: -8px 0 14px;
+    color: #b42318;
+    font-size: 0.85rem;
+}
+
+.admin-main .card-actions {
+    align-items: center;
+    flex-wrap: wrap;
+}

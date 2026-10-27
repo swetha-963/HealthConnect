@@ -120,6 +120,16 @@ urlpatterns = [
         views.add_doctor,
         name="add_doctor"
     ),
+    path(
+        "edit-doctor/<int:doctor_id>/",
+        views.edit_doctor,
+        name="edit_doctor"
+    ),
+    path(
+        "delete-doctor/<int:doctor_id>/",
+        views.delete_doctor,
+        name="delete_doctor"
+    ),
 
 
     # Schedules
@@ -133,6 +143,11 @@ urlpatterns = [
         "add-schedule/",
         views.add_schedule,
         name="add_schedule"
+    ),
+    path(
+        "edit-schedule/<int:schedule_id>/",
+        views.edit_schedule,
+        name="edit_schedule"
     ),
 
 
@@ -155,6 +170,16 @@ urlpatterns = [
         "add-medicine/",
         views.add_medicine,
         name="add_medicine"
+    ),
+    path(
+        "edit-medicine/<int:medicine_id>/",
+        views.edit_medicine,
+        name="edit_medicine"
+    ),
+    path(
+        "delete-medicine/<int:medicine_id>/",
+        views.delete_medicine,
+        name="delete_medicine"
     ),
 
 
