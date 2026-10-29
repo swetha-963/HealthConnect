@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 import uuid
 
 
@@ -9,6 +10,21 @@ class AdminUser(models.Model):
 
     def __str__(self):
         return self.email
+
+
+class EmailVerificationOTP(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="email_verification_otp",
+    )
+    code_hash = models.CharField(max_length=128)
+    sent_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        return f"Email verification OTP for {self.user.email}"
 
 
 class Doctor(models.Model):

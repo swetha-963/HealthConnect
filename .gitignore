@@ -1,28 +1,11 @@
 
-# Python virtual environments
+# Python virtual environments and cache
 env/
 .venv/
-
-# Python cache
 __pycache__/
 *.py[cod]
 
-# Secret environment files
-.env
-**/.env
-
-# Local database and generated files
-*.sqlite3
-**/staticfiles/
-media/
-
-
-
-
-env/
-.venv/
-**/__pycache__/
-*.py[cod]
+# Local settings, databases, and uploaded media
 **/.env
 *.sqlite3
 media/

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <body style="font-family: Arial, sans-serif; color: #0f172a;">
-    <h2>HealthConnect Login Notification</h2>
+    <h2>New sign-in to your HealthConnect account</h2>
     <p>Hello {{ user.email }},</p>
     <p>
         You are receiving this email because your email was used to sign in to
@@ -12,6 +12,6 @@
         <li><strong>Date:</strong> {{ login_time|date:"j F Y" }}</li>
         <li><strong>Time:</strong> {{ login_time|time:"g:i A" }}</li>
     </ul>
-    <p>If this was you, no action is needed. If this was not you, change your password immediately.</p>
+    <p>If this was you, no action is needed. If you did not sign in, secure your account by changing your password.</p>
 </body>
 </html>

@@ -1,5 +1,7 @@
-from datetime import date
+from datetime import date, timedelta
+import binascii
 import logging
+import secrets
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -12,14 +14,15 @@ from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.utils import timezone
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 
 from .models import (
     AdminUser,
     Doctor,
     DoctorSchedule,
     Appointment,
+    EmailVerificationOTP,
     Medicine,
     Order,
 )
@@ -36,17 +39,31 @@ from .utils import (
 
 logger = logging.getLogger(__name__)
 
+OTP_EXPIRY_MINUTES = 10
+OTP_MAX_ATTEMPTS = 5
+OTP_RESEND_WAIT_SECONDS = 30
+PENDING_OTP_SESSION_KEY = "pending_email_otp_user_id"
+
+
+class SignupEmailDeliveryError(Exception):
+    """Raised to roll back a signup when its verification email cannot be sent."""
+
 
 def send_notification_email(subject, template_name, context, recipient_list):
+    # The console backend is useful for development diagnostics, but it cannot
+    # verify that the user controls the address. Never treat it as delivery.
+    if settings.EMAIL_BACKEND.endswith("console.EmailBackend"):
+        return False
+
     try:
-        send_templated_email(
+        sent = send_templated_email(
             subject=subject,
             template_name=template_name,
             context=context,
             recipient_list=recipient_list,
         )
 
-        return True
+        return bool(sent)
 
     except Exception:
         logger.exception(
@@ -60,19 +77,12 @@ def send_notification_email(subject, template_name, context, recipient_list):
 
 def build_account_email_context(request, user, extra_context=None):
     current_time = timezone.localtime()
-    browser = request.META.get("HTTP_USER_AGENT", "Unknown browser")
-    client_ip = request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0].strip()
-
-    if not client_ip:
-        client_ip = request.META.get("REMOTE_ADDR", "Unknown")
 
     context = {
         "user": user,
         "site_name": "HealthConnect",
         "site_url": request.build_absolute_uri("/"),
         "event_time": current_time,
-        "browser": browser,
-        "client_ip": client_ip,
     }
 
     if extra_context:
@@ -81,48 +91,43 @@ def build_account_email_context(request, user, extra_context=None):
     return context
 
 
-def send_email_verification(request, user):
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
-    token = default_token_generator.make_token(user)
-    verification_url = request.build_absolute_uri(
-        f"/verify-email/{uid}/{token}/"
-    )
+def send_signup_otp(request, user):
+    code = f"{secrets.randbelow(1_000_000):06d}"
+    now = timezone.now()
 
-    return send_notification_email(
-        subject="Verify your HealthConnect email",
-        template_name="emails/verify_email.html",
-        context=build_account_email_context(
-            request,
-            user,
-            {
-                "verification_url": verification_url,
-            },
-        ),
-        recipient_list=[
-            user.email
-        ],
-    )
+    try:
+        # Keep a prior working code if a resend fails. For a new signup, the
+        # surrounding transaction also rolls back the user if delivery fails.
+        with transaction.atomic():
+            EmailVerificationOTP.objects.update_or_create(
+                user=user,
+                defaults={
+                    "code_hash": make_password(code),
+                    "sent_at": now,
+                    "expires_at": now + timedelta(minutes=OTP_EXPIRY_MINUTES),
+                    "attempts": 0,
+                },
+            )
 
+            sent = send_notification_email(
+                subject="Your HealthConnect verification code",
+                template_name="emails/signup_otp.html",
+                context=build_account_email_context(
+                    request,
+                    user,
+                    {
+                        "otp_code": code,
+                        "otp_expiry_minutes": OTP_EXPIRY_MINUTES,
+                    },
+                ),
+                recipient_list=[user.email],
+            )
+            if not sent:
+                raise SignupEmailDeliveryError
+    except SignupEmailDeliveryError:
+        return False
 
-def send_account_data_notice(request, user):
-    return send_notification_email(
-        subject="You shared account data with HealthConnect",
-        template_name="emails/account_data_notice.html",
-        context=build_account_email_context(
-            request,
-            user,
-            {
-                "shared_data": [
-                    "Email address",
-                    "Account verification status",
-                ],
-            },
-        ),
-        recipient_list=[
-            user.email
-        ],
-    )
-
+    return True
 
 # =========================================================
 # USER
@@ -172,35 +177,42 @@ def user_register(request):
 
             return redirect("register")
 
-        # Create user
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            password=password
-        )
+        try:
+            with transaction.atomic():
+                user = User.objects.create_user(
+                    username=email,
+                    email=email,
+                    password=password,
+                    is_active=False,
+                )
 
-        user.is_active = False
-        user.save(
-            update_fields=["is_active"]
-        )
+                if not send_signup_otp(request, user):
+                    raise SignupEmailDeliveryError
 
-        email_sent = send_email_verification(
-            request,
-            user
-        )
+        except SignupEmailDeliveryError:
+            request.session.pop(PENDING_OTP_SESSION_KEY, None)
+            if settings.EMAIL_BACKEND.endswith("console.EmailBackend"):
+                messages.error(
+                    request,
+                    "Email delivery is not configured on this server, so no account was created. "
+                    "Add SMTP settings to healthconnect/.env and try again.",
+                )
+            else:
+                messages.error(
+                    request,
+                    "We could not send your verification code, so no account was created. "
+                    "Please check the email address and try again later.",
+                )
+            return redirect("register")
 
+        request.session[PENDING_OTP_SESSION_KEY] = user.pk
+        request.session.set_expiry(20 * 60)
         messages.success(
             request,
-            "Account created. Please verify your email before signing in."
+            "We sent a six-digit code to your email. Enter it to activate your account.",
         )
 
-        if not email_sent:
-            messages.warning(
-                request,
-                "The verification email could not be sent. Please check email settings."
-            )
-
-        return redirect("login")
+        return redirect("verify_signup_otp")
 
     return render(
         request,
@@ -228,11 +240,31 @@ def user_login(request):
             ""
         )
 
-        user = authenticate(
-            request,
-            username=email,
-            password=password
-        )
+        user = authenticate(request, username=email, password=password)
+
+        # Inactive users can request a fresh verification code by entering the
+        # correct password. They are not signed in until they verify ownership.
+        if user is None:
+            pending_user = User.objects.filter(
+                username=email,
+                is_active=False,
+            ).first()
+            if pending_user and pending_user.check_password(password):
+                if send_signup_otp(request, pending_user):
+                    request.session[PENDING_OTP_SESSION_KEY] = pending_user.pk
+                    request.session.set_expiry(20 * 60)
+                    messages.info(
+                        request,
+                        "This account needs email verification. We sent a six-digit code to your inbox.",
+                    )
+                else:
+                    messages.warning(
+                        request,
+                        "This account needs email verification, but we could not deliver a code. "
+                        "Please try again later.",
+                    )
+                    return redirect("login")
+                return redirect("verify_signup_otp")
 
         if user is not None:
 
@@ -242,7 +274,7 @@ def user_login(request):
             )
 
             email_sent = send_notification_email(
-                subject="HealthConnect Login Notification",
+                subject="New sign-in to your HealthConnect account",
                 template_name="emails/login_success.html",
                 context=build_account_email_context(
                     request,
@@ -259,34 +291,10 @@ def user_login(request):
             if not email_sent:
                 messages.warning(
                     request,
-                    "Logged in, but the login email could not be sent. Please check email settings."
+                    "You are signed in, but we could not deliver the sign-in notice to your inbox."
                 )
 
             return redirect("home")
-
-        inactive_user = User.objects.filter(
-            username=email,
-            is_active=False
-        ).first()
-
-        if inactive_user and inactive_user.check_password(password):
-            email_sent = send_email_verification(
-                request,
-                inactive_user
-            )
-
-            messages.warning(
-                request,
-                "Please verify your email before signing in. We sent a new verification link."
-            )
-
-            if not email_sent:
-                messages.warning(
-                    request,
-                    "The verification email could not be sent. Please check email settings."
-                )
-
-            return redirect("login")
 
         messages.error(
             request,
@@ -299,17 +307,113 @@ def user_login(request):
     )
 
 
+def verify_signup_otp(request):
+    user_id = request.session.get(PENDING_OTP_SESSION_KEY)
+    if not user_id:
+        messages.info(request, "Sign in or create an account to request an email code.")
+        return redirect("login")
+
+    try:
+        user_id = int(user_id)
+    except (TypeError, ValueError):
+        user_id = None
+
+    user = User.objects.filter(pk=user_id).first() if user_id is not None else None
+    if user is None:
+        request.session.pop(PENDING_OTP_SESSION_KEY, None)
+        messages.info(
+            request,
+            "This verification session is no longer valid. Please create your account again.",
+        )
+        return redirect("register")
+
+    if user.is_active:
+        request.session.pop(PENDING_OTP_SESSION_KEY, None)
+        messages.success(request, "Your email is already verified. Please sign in.")
+        return redirect("login")
+
+    otp = EmailVerificationOTP.objects.filter(user=user).first()
+    now = timezone.now()
+
+    if request.method == "POST":
+        action = request.POST.get("action", "verify")
+
+        if action == "resend":
+            if otp and (now - otp.sent_at).total_seconds() < OTP_RESEND_WAIT_SECONDS:
+                messages.info(
+                    request,
+                    "Please wait a few seconds before requesting another code.",
+                )
+            elif send_signup_otp(request, user):
+                messages.success(request, "A new verification code was sent to your email.")
+            else:
+                messages.error(request, "We could not deliver a code. Please try again later.")
+            return redirect("verify_signup_otp")
+
+        if otp is None:
+            messages.error(request, "No active code was found. Request a new one below.")
+            return render(
+                request,
+                "user/verify_otp.html",
+                {"email": user.email, "code_available": False},
+            )
+
+        if otp.attempts >= OTP_MAX_ATTEMPTS:
+            messages.error(request, "Too many incorrect attempts. Request a new code below.")
+        elif now >= otp.expires_at:
+            messages.error(request, "That code has expired. Request a new code below.")
+        else:
+            otp.attempts += 1
+            otp.save(update_fields=["attempts"])
+
+            if check_password(request.POST.get("otp_code", "").strip(), otp.code_hash):
+                user.is_active = True
+                user.save(update_fields=["is_active"])
+                otp.delete()
+                request.session.pop(PENDING_OTP_SESSION_KEY, None)
+                messages.success(request, "Your email is verified. You can now sign in.")
+                return redirect("login")
+
+            attempts_left = OTP_MAX_ATTEMPTS - otp.attempts
+            messages.error(
+                request,
+                f"That code is incorrect. You have {attempts_left} attempt(s) left.",
+            )
+
+        return redirect("verify_signup_otp")
+
+    return render(
+        request,
+        "user/verify_otp.html",
+        {
+            "email": user.email,
+            "code_available": bool(
+                otp
+                and now < otp.expires_at
+                and otp.attempts < OTP_MAX_ATTEMPTS
+            ),
+        },
+    )
+
+
 def verify_email(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+    except (
+        binascii.Error,
+        TypeError,
+        ValueError,
+        OverflowError,
+        UnicodeDecodeError,
+        User.DoesNotExist,
+    ):
         user = None
 
     if user is None or not default_token_generator.check_token(user, token):
         messages.error(
             request,
-            "This verification link is invalid or has expired."
+            "This verification link is invalid or has expired. Sign in with your email and password to request a fresh one.",
         )
 
         return redirect("login")
@@ -319,27 +423,11 @@ def verify_email(request, uidb64, token):
         user.save(
             update_fields=["is_active"]
         )
-
-        send_notification_email(
-            subject="Welcome to HealthConnect",
-            template_name="emails/account_welcome.html",
-            context=build_account_email_context(
-                request,
-                user,
-            ),
-            recipient_list=[
-                user.email
-            ],
-        )
-
-        send_account_data_notice(
-            request,
-            user
-        )
+        EmailVerificationOTP.objects.filter(user=user).delete()
 
     messages.success(
         request,
-        "Your email has been verified. You can now sign in."
+        "Your email is verified. You can now sign in.",
     )
 
     return redirect("login")

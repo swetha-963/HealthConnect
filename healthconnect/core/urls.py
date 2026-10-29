@@ -33,6 +33,11 @@ urlpatterns = [
         views.verify_email,
         name="verify_email"
     ),
+    path(
+        "verify-email-code/",
+        views.verify_signup_otp,
+        name="verify_signup_otp"
+    ),
 
     path(
         "logout/",

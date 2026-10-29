@@ -5,6 +5,13 @@
 
 {% block content %}
 <div class="auth-card">
+    {% if messages %}
+    <div class="messages" role="status" aria-live="polite">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <div class="tabs">
         <button class="active" type="button">Sign In</button>
         <a href="{% url 'register' %}">Sign Up</a>

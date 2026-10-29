@@ -1,1 +1,16 @@
 /* Page-specific styles for register — inherits from base.css */
+
+.otp-resend-form {
+    margin-top: 12px;
+}
+
+.otp-resend-form button {
+    width: 100%;
+    color: #344054;
+    background: #eef2f7;
+    box-shadow: none;
+}
+
+.otp-resend-form button:hover {
+    background: #dbe3ee;
+}

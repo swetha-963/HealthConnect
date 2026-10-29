@@ -6,11 +6,7 @@ from pathlib import Path
 import os
 import importlib.util
 
-import dj_database_url
 from dotenv import load_dotenv
-
-
-# import dj_database_url
 
 load_dotenv()
 
@@ -32,12 +28,6 @@ ALLOWED_HOSTS = [
     for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
     if host.strip()
 ]
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
-    if origin.strip()
-]
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -65,7 +55,6 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -73,13 +62,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-SECURE_SSL_REDIRECT = os.getenv(
-    "SECURE_SSL_REDIRECT", "False" if DEBUG else "True"
-).strip().lower() in {"1", "true", "yes", "on"}
 
 if ALLAUTH_AVAILABLE:
     MIDDLEWARE.insert(
@@ -108,22 +90,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "healthconnect.wsgi.application"
 
-DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
-if DATABASE_URL:
-    DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        ssl_require=not DEBUG,
-    )
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -132,6 +104,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# Keep older verification links valid for one week. New signups use short-lived OTPs.
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 7
+
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
@@ -139,41 +114,31 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-    },
-}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "login"
 
-RESEND_API_KEY = os.getenv("RESEND_API_KEY", "").strip()
-if DEBUG:
-    EMAIL_BACKEND = os.getenv(
-        "EMAIL_BACKEND",
-        "core.email_backends.ResendEmailBackend"
-        if RESEND_API_KEY
-        else "django.core.mail.backends.console.EmailBackend",
-    ).strip()
-else:
-    # Always use the HTTP API in production, even if an old SMTP setting remains
-    # in the host's environment.
-    EMAIL_BACKEND = "core.email_backends.ResendEmailBackend"
-
+EMAIL_HOST = os.getenv("EMAIL_HOST", "").strip()
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").strip().lower() in {
+    "1", "true", "yes", "on"
+}
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").strip().lower() in {
+    "1", "true", "yes", "on"
+}
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_TIMEOUT = 15
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL",
-    "onboarding@resend.dev",
+    EMAIL_HOST_USER or "noreply@localhost",
 ).strip()
-
-
-
-
+EMAIL_BACKEND = (
+    "django.core.mail.backends.smtp.EmailBackend"
+    if EMAIL_HOST
+    else "django.core.mail.backends.console.EmailBackend"
+)
 
 if ALLAUTH_AVAILABLE:
     # =========================================================

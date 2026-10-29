@@ -118,7 +118,7 @@ class FeatureViewsTests(TestCase):
         EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
         DEFAULT_FROM_EMAIL="noreply@example.com",
     )
-    def test_register_sends_verification_to_submitted_email(self):
+    def test_register_requires_email_otp_and_emails_submitted_address(self):
         response = self.client.post(
             reverse("register"),
             {
@@ -138,8 +138,10 @@ class FeatureViewsTests(TestCase):
         self.assertEqual(mail.outbox[0].to, ["new.user@gmail.com"])
         self.assertEqual(
             mail.outbox[0].subject,
-            "Verify your HealthConnect email",
+            "Your HealthConnect verification code",
         )
+        self.assertIn("No Google account data was accessed", mail.outbox[0].body)
+        self.assertRegex(mail.outbox[0].body, r"\b\d{6}\b")
 
     def test_register_rejects_existing_gmail_alias(self):
         User.objects.create_user(
@@ -168,7 +170,7 @@ class FeatureViewsTests(TestCase):
         EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
         DEFAULT_FROM_EMAIL="noreply@example.com",
     )
-    def test_verify_email_sends_welcome_and_account_data_notice(self):
+    def test_verify_email_activates_account_without_extra_email(self):
         user = User.objects.create_user(
             username="verify-me@example.com",
             email="verify-me@example.com",
@@ -189,17 +191,7 @@ class FeatureViewsTests(TestCase):
         user.refresh_from_db()
 
         self.assertTrue(user.is_active)
-        self.assertEqual(len(mail.outbox), 2)
-        self.assertEqual(
-            mail.outbox[0].subject,
-            "Welcome to HealthConnect",
-        )
-        self.assertEqual(
-            mail.outbox[1].subject,
-            "You shared account data with HealthConnect",
-        )
-        self.assertEqual(mail.outbox[1].to, ["verify-me@example.com"])
-        self.assertIn("Email address", mail.outbox[1].body)
+        self.assertEqual(len(mail.outbox), 0)
 
     @override_settings(
         EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
@@ -219,7 +211,7 @@ class FeatureViewsTests(TestCase):
         self.assertEqual(mail.outbox[0].to, ["patient@example.com"])
         self.assertEqual(
             mail.outbox[0].subject,
-            "HealthConnect Login Notification",
+            "New sign-in to your HealthConnect account",
         )
 
     @override_settings(

@@ -1,29 +1,22 @@
 <!DOCTYPE html>
 <html>
 <body style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.5;">
-    <h2>You shared account data with {{ site_name }}</h2>
+    <h2>Your {{ site_name }} account is ready</h2>
     <p>Hello {{ user.email }},</p>
     <p>
-        Your email address was verified and your {{ site_name }} account is now connected
-        to this website.
+        An account was created with this email address. You can sign in to {{ site_name }} now.
     </p>
-    <p><strong>Data shared with {{ site_name }}:</strong></p>
+    <p><strong>Information used for your account:</strong></p>
     <ul>
         {% for item in shared_data %}
         <li>{{ item }}</li>
         {% endfor %}
     </ul>
-    <p><strong>Activity details:</strong></p>
-    <ul>
-        <li><strong>Website:</strong> {{ site_url }}</li>
-        <li><strong>Date:</strong> {{ event_time|date:"j F Y" }}</li>
-        <li><strong>Time:</strong> {{ event_time|time:"g:i A" }}</li>
-        <li><strong>IP address:</strong> {{ client_ip }}</li>
-        <li><strong>Browser:</strong> {{ browser }}</li>
-    </ul>
     <p>
-        If this was you, no action is needed. If you did not create this account,
-        please ignore this message or contact HealthConnect support.
+        This signup used the {{ site_name }} email form. No Google account data was accessed.
     </p>
+    <p><a href="{{ login_url }}">Sign in to {{ site_name }}</a></p>
+    <p>Signup time: {{ event_time|date:"j F Y" }} at {{ event_time|time:"g:i A" }}</p>
+    <p>If you did not create this account, you can ignore this email.</p>
 </body>
 </html>

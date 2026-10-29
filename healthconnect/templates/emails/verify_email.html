@@ -4,8 +4,8 @@
     <h2>Verify your email for {{ site_name }}</h2>
     <p>Hello {{ user.email }},</p>
     <p>
-        You are receiving this email because this address was used to create an account
-        on <strong>{{ site_name }}</strong>.
+        Someone used this address to sign up for <strong>{{ site_name }}</strong>.
+        Verify that you own this inbox to activate the account.
     </p>
     <ul>
         <li><strong>Website:</strong> {{ site_url }}</li>
@@ -16,6 +16,14 @@
     <p>
         <a href="{{ verification_url }}">Verify email address</a>
     </p>
+    <p><strong>Information used for this account:</strong></p>
+    <ul>
+        {% for item in shared_data %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    <p>This signup used the {{ site_name }} email form. No Google account data was accessed.</p>
+    <p>This verification link expires in 7 days. If it expires, sign in with your email and password to request a new one.</p>
     <p>If this was not you, you can ignore this email.</p>
     <p>Thank you for using {{ site_name }}.</p>
 </body>

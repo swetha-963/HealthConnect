@@ -1,4 +1,4 @@
-HealthConnect Login Notification
+New sign-in to your HealthConnect account
 
 Hello {{ user.email }},
 
@@ -8,4 +8,4 @@ Website: {{ site_url }}
 Date: {{ login_time|date:"j F Y" }}
 Time: {{ login_time|time:"g:i A" }}
 
-If this was you, no action is needed. If this was not you, change your password immediately.
+If this was you, no action is needed. If you did not sign in, secure your account by changing your password.

@@ -5,19 +5,26 @@
 
 {% block content %}
 <div class="auth-card">
+    {% if messages %}
+    <div class="messages" role="status" aria-live="polite">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <div class="tabs">
         <a href="{% url 'login' %}">Sign In</a>
         <button class="active" type="button">Sign Up</button>
     </div>
     <h2>Create your account</h2>
-    <p>Use an inbox you can open. We send a verification link before your account goes live.</p>
+    <p>Create an account with your email and password. Verify your email to finish signing up.</p>
     <form method="POST">
         {% csrf_token %}
         <label>Email</label>
         <input type="email" name="email" required autocomplete="email" placeholder="you@example.com">
-        <span class="form-hint">Gmail dot and plus aliases count as the same email.</span>
         <label>Password</label>
-        <input type="password" name="password" required autocomplete="new-password" placeholder="Min 8 chars, upper, lower, number, special">
+        <input type="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Include upper/lowercase, a number, and a symbol">
+        <span class="form-hint">Use at least 8 characters with uppercase and lowercase letters, a number, and a symbol. Avoid common passwords.</span>
         <label>Confirm Password</label>
         <input type="password" name="confirm_password" required autocomplete="new-password" placeholder="Re-enter password">
         <button type="submit">Create Account</button>

@@ -183,6 +183,14 @@ body {
     box-shadow: 0 28px 90px rgba(17, 24, 39, 0.12);
 }
 
+.auth-card .messages {
+    margin-bottom: 20px;
+}
+
+.auth-card .alert:last-child {
+    margin-bottom: 0;
+}
+
 .auth-card h2 {
     font-size: 1.75rem;
     margin-bottom: 6px;
